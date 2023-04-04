@@ -8,18 +8,18 @@ Web programming midterms project task made by
 
 This website works as a pet adoption site where there are 3 'levels' to a user <br>
   
-An unregistered user can:  
+An unregistered user can:
 <li> View animals that are up for adoption  
 <li> View the available adoption centers  
 <br>
 
-A Registered user can:  
+A Registered user can:
 <li> View animals that are up for adoption  
 <li> View the available adoption centers  
 <li> 'Book' the animal for adoption  
 <br>
 
-An Admin can:  
+An Admin can:
 <li> View animals that are up for adoption  
 <li> View the available adoption centers  
 <li> Create, Edit, and Delete Adoption Centers  
