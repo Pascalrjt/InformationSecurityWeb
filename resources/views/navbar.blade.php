@@ -4,7 +4,7 @@
             <img src="img/pethub-logo-orange.png" alt="" class="mr-2" style="width: 32px; height: 32px;">
             Pethub Adoption
         </h3>
-        <div class="d-flex justify-content-start align-items-center">
+        <div class="d-flex justify-content-start align-items-center navbarText">
             <h5 class="mx-2">
                 <a href="/">Home</a>
             </h5>
