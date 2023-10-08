@@ -1,8 +1,17 @@
-<div class="bg-orange text-white py-2">
+<style>
+  .bg-black {
+    background-color: #1a1a1a;
+  }
+
+  .bg-hollow {
+    background-color: #141516;
+  }
+</style>
+
+<div class="bg-hollow text-white py-2">
     <div class="d-flex justify-content-between mx-5">
         <h3>
-            <img src="img/pethub-logo-orange.png" alt="" class="mr-2" style="width: 32px; height: 32px;">
-            Pethub Adoption
+            WebHub
         </h3>
         <div class="d-flex justify-content-start align-items-center navbarText">
             <h5 class="mx-2">

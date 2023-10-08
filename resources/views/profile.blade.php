@@ -6,7 +6,7 @@
         <p>{{ Auth::user()->email }}</p>
         <p>{{ Auth::user()->bio }}</p>
         <div>
-            <h2>Adoption Plans</h2>
+            <h2>ID Image</h2>
             <ul>
                 @foreach ($adoptionPlans as $adoptionPlan)
                     <h5>Animal Name: {{ $adoptionPlan->animal->name }}</h5>

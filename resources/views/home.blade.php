@@ -3,12 +3,12 @@
 
 <div class="main-image">
     <div class="container">
-        <h1><span>Pethub Adoption<br></span></h1>
+        <h1><span>WebHub Storage<br></span></h1>
         <div class="paddingText">
-            <span class="cen">Petflix and chill<br></span>
+            <span class="cen">Secure Storage<br></span>
         </div>
         <br>
-        <a class="button" href="/animals">Adopt an Angel Now!</a>
+        <a class="button" href="/animals">View Data</a>
     </div>
 </div>
 

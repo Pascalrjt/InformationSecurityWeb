@@ -1,6 +1,6 @@
 @extends('master')
 @section('content')
-    <h1>Animals</h1>
+    <h1>Data</h1>
     <div class="row mx-5 justify-content-center">
         @foreach ($animals as $item)
             <div class="card mx-2 bg-dark text-white animal-card" style="width: 300px;">
