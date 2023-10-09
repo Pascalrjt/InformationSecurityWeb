@@ -63,15 +63,6 @@ body.dark-mode {
     border-color: darkslategrey;
 }
 
-.main-image {
-    position: relative;
-    background: url(https://images.unsplash.com/photo-1570458436416-b8fcccfe883f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80)
-        no-repeat center;
-    background-size: cover;
-    height: 600px;
-    overflow: hidden;
-}
-
 .container {
     position: absolute;
     top: 50%;

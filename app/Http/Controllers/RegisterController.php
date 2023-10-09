@@ -30,4 +30,46 @@ class RegisterController extends Controller
 
         return redirect('/login')->with('success', 'Registration Success!');
     }
+
+//     public function store(Request $request)
+// {
+//     $validatedData = $request->validate([
+//         'name' => 'required|max:225',
+//         'username' => 'required|min:5|max:20|unique:users',
+//         'email' => 'required|email|unique:users',
+//         'password' => 'required|min:5|max:255'
+//     ]);
+
+//     $cipher = "AES-128-ECB";
+//     $secret = "fadhlanganteng123";
+    
+//     // Encrypt the data before storing
+//     foreach ($validatedData as $key => $value) {
+//             $validatedData[$key] = openssl_encrypt($value, $cipher, $secret);
+//     }
+
+//     User::create($validatedData);
+
+//     return redirect('/login')->with('success', 'Registration Success!');
+// }
+
+// public function store(Request $request)
+// {
+//     $validatedData = $request->validate([
+//         'name' => 'required|max:225',
+//         'username' => 'required|min:5|max:20|unique:users',
+//         'email' => 'required|email|unique:users',
+//         'password' => 'required|min:5|max:255'
+//     ]);
+
+//     User::create([
+//         'name' => $validatedData['name'],
+//         'username' => $validatedData['username'],
+//         'email' => $validatedData['email'],
+//         'password' => bcrypt($validatedData['password']), // Use bcrypt to securely hash the password
+//     ]);
+
+//     return redirect('/login')->with('success', 'Registration Success!');
+// }
+
 }

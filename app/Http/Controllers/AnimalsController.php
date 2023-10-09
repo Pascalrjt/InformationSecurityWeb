@@ -64,6 +64,51 @@ class AnimalsController extends Controller
         return redirect('/animals');
     }
 
+//     public function store(Request $request)
+// {
+//     $request->validate([
+//         'name' => 'required',
+//         'breed' => 'required',
+//         'age' => 'required|numeric',
+//         'center_id' => 'required',
+//         'desc' => 'required|max:2048',
+//         'image' => 'image|file|max:2048'
+//     ],
+//     [
+//         'name.required' => 'Name can\'t be empty!',
+//         'breed.required' => 'NRP can\'t be empty!',
+//         'age.required' => 'Jurusan can\'t be empty!',
+//         'center_id' => 'Please choose your angkatan',
+//         'desc.required' => 'desc can\'t be empty!'
+//     ]);
+
+//     // Get the file from the request
+//     $file = $request->file('image');
+
+//     // Read the file's contents
+//     $contents = file_get_contents($file->getRealPath());
+
+//     // Encrypt the contents
+//     $encryptedContents = encrypt($contents);
+
+//     // Generate a file name
+//     $fileName = $file->getClientOriginalName();
+
+//     // Store the encrypted contents
+//     Storage::put("post-images/{$fileName}", $encryptedContents);
+
+//     Animals::create([
+//         'name' => $request->name,
+//         'center_id' => $request->center_id,
+//         'breed' => $request->breed,
+//         'age' => $request->age,
+//         'desc' => $request->desc,
+//         'image' => "post-images/{$fileName}"
+//     ]);
+
+//     return redirect('/animals');
+// }
+
     /**
      * Display the specified resource.
      */
