@@ -15,43 +15,47 @@ class RegisterController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|max:225',
-            'username' => 'required|min:5|max:20|unique:users',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:5|max:255'
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|max:225',
+    //         'username' => 'required|min:5|max:20|unique:users',
+    //         'email' => 'required|email|unique:users',
+    //         'password' => 'required|min:5|max:255'
+    //     ]);
 
-        $validatedData['password'] = bcrypt($validatedData['password']);
+    //     $validatedData['password'] = bcrypt($validatedData['password']);
         
-        User::create($validatedData);
+    //     User::create($validatedData);
 
-        return redirect('/login')->with('success', 'Registration Success!');
+    //     return redirect('/login')->with('success', 'Registration Success!');
+    // }
+
+    public function store(Request $request)
+{
+    $validatedData = $request->validate([
+        'name' => 'required|max:225',
+        'username' => 'required|min:5|max:20|unique:users',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:5|max:255'
+    ]);
+
+    $cipher = "AES-128-ECB";
+    $secret = "fadhlanganteng123";
+    
+    $validatedData['password'] = bcrypt($validatedData['password']);
+
+    // Encrypt the data before storing
+    foreach ($validatedData as $key => $value) {
+        if ($key != 'password' && $key != 'email') { // We don't need to encrypt the password as it's already hashed
+            $validatedData[$key] = openssl_encrypt($value, $cipher, $secret);
+        }
     }
 
-//     public function store(Request $request)
-// {
-//     $validatedData = $request->validate([
-//         'name' => 'required|max:225',
-//         'username' => 'required|min:5|max:20|unique:users',
-//         'email' => 'required|email|unique:users',
-//         'password' => 'required|min:5|max:255'
-//     ]);
+    User::create($validatedData);
 
-//     $cipher = "AES-128-ECB";
-//     $secret = "fadhlanganteng123";
-    
-//     // Encrypt the data before storing
-//     foreach ($validatedData as $key => $value) {
-//             $validatedData[$key] = openssl_encrypt($value, $cipher, $secret);
-//     }
-
-//     User::create($validatedData);
-
-//     return redirect('/login')->with('success', 'Registration Success!');
-// }
+    return redirect('/login')->with('success', 'Registration Success!');
+}
 
 // public function store(Request $request)
 // {
