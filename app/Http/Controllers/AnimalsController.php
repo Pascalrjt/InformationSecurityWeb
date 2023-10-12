@@ -24,7 +24,21 @@ class AnimalsController extends Controller
     // {
     //     //
     // }
-
+    public function imageToBase64($imagePath) {
+        try {
+            $imageData = file_get_contents($imagePath);
+            if ($imageData === false) {
+                throw new Exception("Failed to read the image file.");
+            }
+            
+            $base64Encoded = base64_encode($imageData);
+            return $base64Encoded;
+        } catch (Exception $e) {
+            echo "An error occurred: " . $e->getMessage();
+            return null;
+        }
+    }
+    
     public function create()
     {
         $centers = Centers::all();
@@ -52,14 +66,27 @@ class AnimalsController extends Controller
             'desc.required' => 'desc can\'t be empty!'
         ]);
 
+        // Animals::create([
+        //     'name' => $request->name,
+        //     'center_id' => $request->center_id,
+        //     'breed' => $request->breed,
+        //     'age' => $request->age,
+        //     'desc' => $request->desc,
+        //     'image' => $request->file('image')->store('post-images')
+        //     ]);
+
+        // return redirect('/animals');
+
+        $image = $request->file('image');
+        $imageBase64 = base64_encode(file_get_contents($image));
         Animals::create([
             'name' => $request->name,
             'center_id' => $request->center_id,
             'breed' => $request->breed,
             'age' => $request->age,
             'desc' => $request->desc,
-            'image' => $request->file('image')->store('post-images')
-            ]);
+            'image' => $imageBase64
+        ]);
 
         return redirect('/animals');
     }
