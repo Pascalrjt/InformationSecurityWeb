@@ -7,7 +7,8 @@
                 <a href="/animals/{{$item->id}}">
                     @if ($item->image)
                         <div style="width: 100%; height: 300px; margin: 10px 0; position: relative;">
-                            <img src="{{ asset('storage/' . $item->image) }}" alt="animal photo" style="width: 100%; height: 100%; object-fit: cover;">
+                            <!-- <img src="{{ asset('storage/' . $item->image) }}" alt="animal photo" style="width: 100%; height: 100%; object-fit: cover;"> -->
+                            <img src="data:image/png;base64,{{ $item->image }}" alt="animal photo" style="width: 100%; height: 100%; object-fit: cover;">
                             <div class="text-center" style="position: absolute; bottom: 0; width: 100%; padding: 10px; background-color: rgba(0, 0, 0, 0.6);">
                                 <h5 class="mb-0 animal-name">{{$item->name}}</h5>
                             </div>

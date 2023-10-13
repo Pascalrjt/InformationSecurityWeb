@@ -12,7 +12,7 @@ class ProfileController extends Controller
     public function index(){
         $user = Auth::user();
         $cipher = "AES-128-ECB";
-        $secret = "fadhlanganteng123";
+        $secret = "fadhlanganteng12";
 
         $username = Auth::user()->name;
         $username = openssl_decrypt($username, $cipher, $secret);

@@ -41,7 +41,7 @@ class RegisterController extends Controller
     ]);
 
     $cipher = "AES-128-ECB";
-    $secret = "fadhlanganteng123";
+    $secret = "fadhlanganteng12";
     
     $validatedData['password'] = bcrypt($validatedData['password']);
 
