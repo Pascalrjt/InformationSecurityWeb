@@ -27,7 +27,7 @@
             <h5><a href="{{ route('profile') }}">Profile</a></h5>
             <h4 class="mx-2"> <i class="bi bi-person-circle"></i> {{ auth()->user()->name }}
           </h4>
-          <form action="/logout" method="post">
+          <form action="/logout" method="post"> 
             @csrf
             <button typle="submit" class="btn btn-link">Logout</button>
         </form>

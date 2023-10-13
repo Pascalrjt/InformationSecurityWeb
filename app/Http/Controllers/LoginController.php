@@ -15,50 +15,50 @@ class LoginController extends Controller
         ]);
     }
 
-    // public function authenticate(Request $request)
-    // {
-    //     $credentials = $request->validate([
-    //         'email' => 'required|email',
-    //         'password' => 'required'
-    //     ]);
-
-    //     if(Auth::attempt($credentials))
-    //     {
-    //         $request->session()->regenerate();
-    //         return redirect()->intended('/');
-    //     }
-
-    //     return back()->with('fail', 'Login failed. make sure you have the correct email and/or password!');
-    // }
-
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
-    
-        $cipher = "AES-128-ECB";
-        $secret = "fadhlanganteng123";
-    
-        // Encrypt the form input before comparing
-        foreach ($credentials as $key => $value) {
-            if($key !== 'email' && $key !== 'password') {
-                $credentials[$key] = openssl_encrypt($value, $cipher, $secret);
-            }
-        }
 
-        // Hash the password using bcrypt
-        $credentials['password'] = bcrypt($credentials['password']);
-    
         if(Auth::attempt($credentials))
         {
             $request->session()->regenerate();
             return redirect()->intended('/');
         }
-    
+
         return back()->with('fail', 'Login failed. make sure you have the correct email and/or password!');
     }
+
+    // public function authenticate(Request $request)
+    // {
+    //     $credentials = $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required'
+    //     ]);
+    
+    //     $cipher = "AES-128-ECB";
+    //     $secret = "fadhlanganteng123";
+    
+    //     // Encrypt the form input before comparing
+    //     foreach ($credentials as $key => $value) {
+    //         if($key !== 'email' && $key !== 'password') {
+    //             $credentials[$key] = openssl_encrypt($value, $cipher, $secret);
+    //         }
+    //     }
+
+    //     // Hash the password using bcrypt
+    //     $credentials['password'] = bcrypt($credentials['password']);
+    
+    //     if(Auth::attempt($credentials))
+    //     {
+    //         $request->session()->regenerate();
+    //         return redirect()->intended('/');
+    //     }
+    
+    //     return back()->with('fail', 'Login failed. make sure you have the correct email and/or password!');
+    // }
 
 
 // public function authenticate(Request $request)
