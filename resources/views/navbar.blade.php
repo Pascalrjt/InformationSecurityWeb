@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
+
 <style>
   .bg-black {
     background-color: #1a1a1a;
@@ -25,8 +29,7 @@
             </h5>
             @auth
             <h5><a href="{{ route('profile') }}">Profile</a></h5>
-            <h4 class="mx-2"> <i class="bi bi-person-circle"></i> {{ $username }}
-          </h4>
+            <h4 class="mx-2"> <i class="bi bi-person-circle"></i> {{ $username }} </h4>
           <form action="/logout" method="post"> 
             @csrf
             <button typle="submit" class="btn btn-link">Logout</button>
