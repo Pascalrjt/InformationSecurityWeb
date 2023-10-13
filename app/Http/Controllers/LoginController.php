@@ -89,20 +89,20 @@ class LoginController extends Controller
     //     return back()->with('fail', 'Login failed. make sure you have the correct email and/or password!');
     // }
 
-    public function authenticate(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+    // public function authenticate(Request $request)
+    // {
+    //     $credentials = $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required'
+    //     ]);
     
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/');
-        }
+    //     if (Auth::attempt($credentials)) {
+    //         $request->session()->regenerate();
+    //         return redirect()->intended('/');
+    //     }
     
-        return back()->with('fail', 'Login failed. Make sure you have the correct email and/or password!');
-    }
+    //     return back()->with('fail', 'Login failed. Make sure you have the correct email and/or password!');
+    // }
 
 
 // public function authenticate(Request $request)

@@ -17,7 +17,8 @@
                         }
                     </style>
                     <div class = "resize">
-                        <img src="{{ asset('storage/' . $animals->image) }}" alt="animal photo">
+                        <!-- <img src="{{ asset('storage/' . $animals->image) }}" alt="animal photo"> -->
+                        <img src="data:image/png;base64,{{ $animals->image }}" alt="animal photo">
                     </div>
                 @else
                     <i class='fas fa-id-badge' style='font-size:180px' class="mx-5"></i>
