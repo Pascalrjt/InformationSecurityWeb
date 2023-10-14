@@ -21,7 +21,7 @@
 <main class="form-registration centered-content">
     <div class="card bg-hollow">
         <div class="card-body bg-hollow ">
-            <form action="/register" method="post">
+            <form action="/register" method="post" enctype="multipart/form-data">
             @csrf
               <h1 class="fw-normal">Registration Form</h1>
                 
@@ -63,6 +63,15 @@
                     {{ $message }}
                 </div>
             @enderror
+              </div>
+              <div class="mb-3">
+                  <label for="idcard" class="form-label form-dark bg-dark color-dark text-white">Upload Image of ID Card</label>
+                  <input class="btn-dark form-control form-dark bg-dark color-dark text-white" type="file" id="image" name="image">
+                  @error('image')
+                  <div class="alert alert-danger">
+                      {{ $message }}
+                  </div>
+              @enderror
               </div>
           
               <button class="w-100 btn btn-lg btn-primary" type="submit">Register</button>

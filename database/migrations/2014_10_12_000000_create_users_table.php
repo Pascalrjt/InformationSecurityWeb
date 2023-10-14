@@ -17,10 +17,14 @@ return new class extends Migration
             $table->string('username');
             $table->string('email')->unique();
             $table->string('password');
+            $table->text('image');
             $table->boolean('is_admin')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
+
+        // Change the 'idcard' column data type to LONGTEXT using a raw SQL statement
+        DB::statement('ALTER TABLE users MODIFY image LONGTEXT');
     }
 
     /**
