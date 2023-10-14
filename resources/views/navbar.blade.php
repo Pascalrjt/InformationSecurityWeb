@@ -14,8 +14,8 @@
 
 <div class="bg-hollow text-white py-2">
     <div class="d-flex justify-content-between mx-5">
-        <h3>
-            WebHub
+        <h3 class="navbarText">
+          <a href="/">Home</a>
         </h3>
         <div class="d-flex justify-content-start align-items-center navbarText">
             <h5 class="mx-2">
@@ -26,6 +26,9 @@
             </h5>
             <h5 class="mx-2">
                 <a href="/center">Centers</a>
+            </h5>
+            <h5 class="mx-2">
+                <a href="/files">Files</a>
             </h5>
             @auth
             <h5><a href="{{ route('profile') }}">Profile</a></h5>
