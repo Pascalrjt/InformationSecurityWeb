@@ -8,22 +8,14 @@ use \App\Models\Centers;
 
 class AnimalsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $animals = Animals::all();
         return view('animals.index', compact('animals'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    // public function create()
-    // {
-    //     //
-    // }
+
     public function imageToBase64($imagePath) {
         try {
             $imageData = file_get_contents($imagePath);
@@ -45,9 +37,6 @@ class AnimalsController extends Controller
         return view('animals.create', compact('centers'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -66,21 +55,17 @@ class AnimalsController extends Controller
             'desc.required' => 'desc can\'t be empty!'
         ]);
 
-        // Animals::create([
-        //     'name' => $request->name,
-        //     'center_id' => $request->center_id,
-        //     'breed' => $request->breed,
-        //     'age' => $request->age,
-        //     'desc' => $request->desc,
-        //     'image' => $request->file('image')->store('post-images')
-        //     ]);
-
-        // return redirect('/animals');
 
         $image = $request->file('image');
         $imageBase64 = base64_encode(file_get_contents($image));
+
+          // Encrypt data
+        $cipher = "AES-128-ECB";
+        $secret = "fadhlanganteng12";// Replace with your secret key
+        $encryptedName = openssl_encrypt($request->name, $cipher, $secret);
+        
         Animals::create([
-            'name' => $request->name,
+            'name' => $encryptedName, // Store the encrypted name
             'center_id' => $request->center_id,
             'breed' => $request->breed,
             'age' => $request->age,
@@ -91,72 +76,12 @@ class AnimalsController extends Controller
         return redirect('/animals');
     }
 
-//     public function store(Request $request)
-// {
-//     $request->validate([
-//         'name' => 'required',
-//         'breed' => 'required',
-//         'age' => 'required|numeric',
-//         'center_id' => 'required',
-//         'desc' => 'required|max:2048',
-//         'image' => 'image|file|max:2048'
-//     ],
-//     [
-//         'name.required' => 'Name can\'t be empty!',
-//         'breed.required' => 'NRP can\'t be empty!',
-//         'age.required' => 'Jurusan can\'t be empty!',
-//         'center_id' => 'Please choose your angkatan',
-//         'desc.required' => 'desc can\'t be empty!'
-//     ]);
-
-//     // Get the file from the request
-//     $file = $request->file('image');
-
-//     // Read the file's contents
-//     $contents = file_get_contents($file->getRealPath());
-
-//     // Encrypt the contents
-//     $encryptedContents = encrypt($contents);
-
-//     // Generate a file name
-//     $fileName = $file->getClientOriginalName();
-
-//     // Store the encrypted contents
-//     Storage::put("post-images/{$fileName}", $encryptedContents);
-
-//     Animals::create([
-//         'name' => $request->name,
-//         'center_id' => $request->center_id,
-//         'breed' => $request->breed,
-//         'age' => $request->age,
-//         'desc' => $request->desc,
-//         'image' => "post-images/{$fileName}"
-//     ]);
-
-//     return redirect('/animals');
-// }
-
-    /**
-     * Display the specified resource.
-     */
-    // public function show(Animals $animals)
-    // {
-    //     //
-    // }
 
     public function show($id)
     {
         $animals = Animals::findorfail($id);
         return view('animals.show', compact('animals'));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    // public function edit(Animals $animals)
-    // {
-    //     //
-    // }
 
     public function edit($id)
     {
@@ -165,13 +90,6 @@ class AnimalsController extends Controller
         return view('animals.edit', compact('animals', 'centers'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    // public function update(Request $request, Animals $animals)
-    // {
-    //     //
-    // }
 
     public function update(Request $request, $id)
     {
