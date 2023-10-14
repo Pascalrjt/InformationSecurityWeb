@@ -8,6 +8,7 @@ use App\Http\Controllers\CentersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AdoptionPlanController;
+use App\Http\Controllers\FilesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,3 +59,6 @@ Route::post('/register', [RegisterController::class, 'store']);
 //Route::post('/', [AdoptionPlanController::class, 'store'])->middleware('auth')->name('adoptionplan.store');
 //Route::post('/', [AdoptionPlanController::class, 'store'])->middleware('auth')->name('adoptionplan.store');
 Route::post('/animals/{animals}', [AdoptionPlanController::class, 'store'])->middleware('auth')->name('adoptionplan.store');
+
+Route::get('/files/create', [FilesController::class, 'upload'])->name('upload');
+Route::post('/files/create', [FilesController::class, 'uploadFile'])->name('upload.post');
