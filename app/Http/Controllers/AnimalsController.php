@@ -12,6 +12,13 @@ class AnimalsController extends Controller
     public function index()
     {
         $animals = Animals::all();
+
+        // Decrypt the name for each animal
+        $secret = "fadhlanganteng12"; // Replace with your secret key
+        foreach ($animals as $animal) {
+            $animal->name = openssl_decrypt($animal->name, "AES-128-ECB", $secret);
+        }
+
         return view('animals.index', compact('animals'));
     }
 
@@ -36,6 +43,7 @@ class AnimalsController extends Controller
         $centers = Centers::all();
         return view('animals.create', compact('centers'));
     }
+    
 
     public function store(Request $request)
     {
@@ -76,12 +84,17 @@ class AnimalsController extends Controller
         return redirect('/animals');
     }
 
-
     public function show($id)
     {
         $animals = Animals::findorfail($id);
+
+        // Decrypt the name
+        $secret = "fadhlanganteng12"; // Replace with your secret key
+        $animals->name = openssl_decrypt($animals->name, "AES-128-ECB", $secret);
+
         return view('animals.show', compact('animals'));
     }
+
 
     public function edit($id)
     {
