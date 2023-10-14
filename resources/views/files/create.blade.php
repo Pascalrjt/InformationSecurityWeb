@@ -21,6 +21,7 @@
 <main class="form-registration centered-content">
     <div class="card bg-hollow">
         <div class="card-body bg-hollow ">
+          {{-- <form method="POST" action="{{route("upload.post")}}" enctype="multipart/form-data"> --}}
           <form method="POST" action="{{route("upload.post")}}" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
