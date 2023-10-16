@@ -11,17 +11,28 @@ class AnimalsController extends Controller
 
     public function index()
     {
+        // Use the same secret key used for encryption
+        $secret = hex2bin("1B6D4B4A5254AC");
         $animals = Animals::all();
 
-        // Decrypt the name for each animal
-        $secret = "fadhlanganteng12"; // Replace with your secret key
         foreach ($animals as $animal) {
-            $animal->name = openssl_decrypt($animal->name, "AES-128-ECB", $secret);
+            // Decode the base64 encoded name
+            $encryptedData = base64_decode($animal->name);
+            $iv = substr($encryptedData, 0, 8);
+            $data = substr($encryptedData, 8);
+
+            // Decrypt the name
+            $decryptedName = openssl_decrypt($data, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
+
+            // Remove null padding
+            $decryptedName = rtrim($decryptedName, "\0");
+
+            // Update the name in the model
+            $animal->name = $decryptedName;
         }
 
         return view('animals.index', compact('animals'));
     }
-
 
     public function imageToBase64($imagePath) {
         try {
@@ -66,20 +77,14 @@ class AnimalsController extends Controller
 
         $image = $request->file('image');
         $imageBase64 = base64_encode(file_get_contents($image));
-
-          // Encrypt data
-        // $cipher = "AES-128-ECB";
-        // $secret = "fadhlanganteng12";// Replace with your secret key
-        // $encryptedName = openssl_encrypt($request->name, $cipher, $secret);
-
-        // Encrypt the name
+        
         $secret = hex2bin("1B6D4B4A5254AC");;
         $iv = openssl_random_pseudo_bytes(8); // Generate a random IV
         $paddedName = str_pad($request->name, 8, "\0"); // Pad the name to 8 bytes if needed
-        $encrypted = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
+        $encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
 
         // Store the encrypted name in the database
-        $encryptedName = base64_encode($iv . $encrypted);
+        $encryptedName = base64_encode($iv . $encryptedName);
 
         Animals::create([
             'name' => $encryptedName, // Store the encrypted name
