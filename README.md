@@ -9,7 +9,7 @@
 |Fauzan Ahmad Faisal                |5025211067 | 
 
 ## Outline
-- 
+- We created a simple website that allows the user to register, login and then store their data. All these files are then encrypted before being stored.
 
 ## Features:
 ## User register & login screen
