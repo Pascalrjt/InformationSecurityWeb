@@ -100,10 +100,14 @@ public function store(Request $request)
     }
 
     $cipher = "AES-128-ECB";
+    // $cipher2 = "rc4";
     $secret = "fadhlanganteng12";
 
     $name = openssl_encrypt($request->name, $cipher, $secret);
     $username = openssl_encrypt($request->username, $cipher, $secret);
+    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret);
+    // $imageBase64 = openssl_decrypt($imageBase64, $cipher, $secret);
+    
 
     User::create([
         'name' => $name,
