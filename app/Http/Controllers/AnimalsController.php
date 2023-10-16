@@ -68,10 +68,19 @@ class AnimalsController extends Controller
         $imageBase64 = base64_encode(file_get_contents($image));
 
           // Encrypt data
-        $cipher = "AES-128-ECB";
-        $secret = "fadhlanganteng12";// Replace with your secret key
-        $encryptedName = openssl_encrypt($request->name, $cipher, $secret);
-        
+        // $cipher = "AES-128-ECB";
+        // $secret = "fadhlanganteng12";// Replace with your secret key
+        // $encryptedName = openssl_encrypt($request->name, $cipher, $secret);
+
+        // Encrypt the name
+        $secret = hex2bin("1B6D4B4A5254AC");;
+        $iv = openssl_random_pseudo_bytes(8); // Generate a random IV
+        $paddedName = str_pad($request->name, 8, "\0"); // Pad the name to 8 bytes if needed
+        $encrypted = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
+
+        // Store the encrypted name in the database
+        $encryptedName = base64_encode($iv . $encrypted);
+
         Animals::create([
             'name' => $encryptedName, // Store the encrypted name
             'center_id' => $request->center_id,
