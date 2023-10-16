@@ -48,3 +48,29 @@ Database:<br>
 
 User profile web page:<br>
 ![UserProfile](https://media.discordapp.net/attachments/1160530410460151899/1163428968741994607/image.png?ex=653f8aa9&is=652d15a9&hm=9513074701059ab063c89cbe788b66e094c625a6c0f76c8f1e36995bdbfd7c0f&=&width=1297&height=671)
+
+DES-ECB Encryption: <br>
+```php
+$secret = hex2bin("1B6D4B4A5254AC");;
+$iv = openssl_random_pseudo_bytes(8); // Generate a random IV
+$paddedName = str_pad($request->name, 8, "\0"); // Pad the name to 8 bytes if needed
+$encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
+
+// Store the encrypted name in the database
+$encryptedName = base64_encode($iv . $encryptedName);
+
+Animals::create([
+    'name' => $encryptedName, // Store the encrypted name
+    'center_id' => $request->center_id,
+    'breed' => $request->breed,
+    'age' => $request->age,
+    'desc' => $request->desc,
+    'image' => $imageBase64
+]);
+```
+- First decide on the secret key for encryption <br>
+- Here, a variable $iv is defined, and it's assigned a random 8-byte value generated using the openssl_random_pseudo_bytes function. This is the Initialization Vector (IV) used for encryption <br>
+- paddedName = str_pad($request->name, 8, "\0") This line creates a variable $paddedName. It takes the name field from the $request object, and if the length of the name is less than 8 characters, it pads it with null bytes ("\0") to make it exactly 8 bytes long<br>
+- encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv); This is to create variable to for the encrypted name and put the value in <br>
+- Store the encrypted name in the database
+- Lastly, we put it on the table
