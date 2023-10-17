@@ -16,19 +16,26 @@
     align-items: center;
     height: 100vh; /* This makes sure it takes the full height of the viewport */
   }
+
+  .small-font {
+    font-size: 12px; 
+  }
+
 </style>
 
 <!-- <div class="alert alert-success">
-        Time taken to encrypt the file: {{ session('time_taken') }} seconds
+        Time taken to encrypt the file: {{ session('time_taken') }} ms
 </div> -->
 
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
       @if (session()->has('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show small-font" role="alert">
           {{ session('success') }} <br>  
-          ID encrypted in: {{ session('time_taken') }} seconds
+          ID encrypted in: {{ session('id_aes_time_taken') }} ms (AES)<br>
+          ID encrypted in: {{ session('id_rc4_time_taken') }} ms (RC4) <br>
+          ID encrypted in: {{ session('id_des_time_taken') }} ms (DES) <br>
         </div>
       @endif
       @if (session()->has('fail'))

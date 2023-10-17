@@ -99,24 +99,40 @@ public function store(Request $request)
         $imageBase64 = null; // or any default value you want to use
     }
 
+    //Ciphers
     $cipher = "AES-128-ECB";
-    // $cipher2 = "rc4";
-    $secret = "fadhlanganteng12";
+    $rc4 = "rc4";
+    $des = "DES-ECB";
 
+    //Keys
+    $secret = "fadhlanganteng12";
+    $rc4key = "2B7E151628AED2A6ABF7158809CF4F3C"; 
+    $deskey = "133457799BBCDFF1A";
+
+    //User profile encryption
     $name = openssl_encrypt($request->name, $cipher, $secret);
     $username = openssl_encrypt($request->username, $cipher, $secret);
     
-    // Start time
+    // AES Encryption for ID card
     $IDAESstart = microtime(true);
-
     $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret);
-
-    // End time
     $IDAESend = microtime(true);
+    $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000; 
+    echo "Time taken to encrypt ID with AES-128-ECB: " . $IDAEStime_taken . " ms";
 
-    // Time taken
-    $IDAEStime_taken = $IDAESend - $IDAESstart;
-    echo "Time taken to encrypt the file: " . $IDAEStime_taken . " seconds";
+    // RC4 Encryption for ID card
+    $IDRC4start = microtime(true);
+    $imageBase64rc4 = openssl_encrypt($imageBase64, $rc4, $rc4key);
+    $IDRC4end = microtime(true);
+    $IDRC4time_taken = ($IDRC4end - $IDRC4start) * 1000; 
+    echo "Time taken to encrypt ID with RC4: " . $IDRC4time_taken . " ms";;
+
+    // DES Encryption for ID Card
+    $IDDESstart = microtime(true);
+    $imageBase64des = openssl_encrypt($imageBase64, $des, $deskey);
+    $IDDESend = microtime(true);
+    $IDDEStime_taken = ($IDDESend - $IDDESstart) * 1000; 
+    echo "Time taken to encrypt ID with DES-ECB: " . $IDDEStime_taken . " ms";
     
     User::create([
         'name' => $name,
@@ -127,7 +143,7 @@ public function store(Request $request)
     ]);
 
     // return redirect('/login')->with('success', 'Registration Success!');
-    return redirect('/login')->with('success', 'Registration Success!')->with('time_taken', $IDAEStime_taken);
+    return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken);;
 }
 
 
