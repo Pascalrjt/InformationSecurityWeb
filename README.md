@@ -37,7 +37,33 @@ public function imageToBase64($imagePath) {
         }
     }
 ```
-- Once this is done, the `image longtext` is encrypted using `AES-128-ECB` then stored in the database.
+- Once this is done, the `image longtext` is encrypted using `AES-128-ECB`, `RC4`, and `DES`. Then the one encrypted with `AES-128-ECB` stored in the database.
+```php
+// AES Encryption for ID card
+    $IDAESstart = microtime(true);
+    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret);
+    $IDAESend = microtime(true);
+    $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000; 
+    echo "Time taken to encrypt ID with AES-128-ECB: " . $IDAEStime_taken . " ms";
+
+    // RC4 Encryption for ID card
+    $IDRC4start = microtime(true);
+    $imageBase64rc4 = openssl_encrypt($imageBase64, $rc4, $rc4key);
+    $IDRC4end = microtime(true);
+    $IDRC4time_taken = ($IDRC4end - $IDRC4start) * 1000; 
+    echo "Time taken to encrypt ID with RC4: " . $IDRC4time_taken . " ms";;
+
+    // DES Encryption for ID Card
+    $IDDESstart = microtime(true);
+    $imageBase64des = openssl_encrypt($imageBase64, $des, $deskey);
+    $IDDESend = microtime(true);
+    $IDDEStime_taken = ($IDDESend - $IDDESstart) * 1000; 
+    echo "Time taken to encrypt ID with DES-ECB: " . $IDDEStime_taken . " ms";
+```
+- `IDAESstart` represents the start time before the file is encrpyted and `IDEASend` represents the end time after the file is encrypted with `AES-128-ECB`. 
+- `$IDAEStime_taken` is calculated by subtracting `IDAESstart` from `IDAESend`. It is then `multiplied by 1000` to obtain the time in `ms`.
+
+![AESvsRC4vsDES](https://cdn.discordapp.com/attachments/1160530410460151899/1163875724109819905/image.png?ex=65412abc&is=652eb5bc&hm=573899e36efa4b6defe30fac73a8de3ae91b3c8be90183aad0626a7f710409f0&)
 
 Database:<br>
 ![UserDatabase](https://cdn.discordapp.com/attachments/1160530410460151899/1163427682441244733/image.png?ex=653f8976&is=652d1476&hm=c4afa6faf5b9a5cd2704e5138b111a8c6bc05837e9d68d65434fa4453ed4806a&)
