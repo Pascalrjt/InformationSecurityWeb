@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Files;
+use Exception;
 
 class filesController extends Controller {
     function upload() {
@@ -32,10 +34,43 @@ class filesController extends Controller {
         }
     }
 
-    public function index() {
-    $files = Storage::files('uploads');
+    public function index()
+    {
+        $files = Files::all();
 
-    return view('files.index', compact('files'));
+        return view('files.index', [
+            'files' => $files,
+            'title' => 'files'
+        ]);
+    }
+
+    public function PDFToBase64($PDFPath) {
+        try {
+            $PDFData = file_get_contents($PDFPath);
+            if ($PDFData === false) {
+                throw new Exception("Failed to read the PDF file.");
+            }
+            
+            $base64 = base64_encode($PDFData);
+            return $base64;
+        } catch (Exception $e) {
+            echo "An error occurred: " . $e->getMessage();
+            return null;
+        }
+    }
+
+    public function store(Request $request) {
+        $request->validate([
+            'name' => 'required|max:225',
+            'pdf' => 'pdf|file|max:2048' // Ensure the uploaded file is a pdf
+        ]);
+
+        $PDF = $request->file('PDF');
+            if ($PDF) {
+                $PDFBase64 = $this->PDFToBase64($PDF->getPathname());
+            } else {
+                $PDFBase64 = null; // or any default value you want to use
+            }
     }
     
 }

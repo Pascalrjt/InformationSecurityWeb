@@ -22,7 +22,7 @@
     <div class="card bg-hollow">
         <div class="card-body bg-hollow ">
           {{-- <form method="POST" action="{{route("upload.post")}}" enctype="multipart/form-data"> --}}
-          <form method="POST" action="{{route("upload.post")}}" enctype="multipart/form-data">
+          <form method="POST" action="/files" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
               <label for="formFile" class="form-label">Upload File</label>
