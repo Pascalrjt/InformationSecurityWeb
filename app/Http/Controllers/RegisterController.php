@@ -105,10 +105,19 @@ public function store(Request $request)
 
     $name = openssl_encrypt($request->name, $cipher, $secret);
     $username = openssl_encrypt($request->username, $cipher, $secret);
-    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret);
-    // $imageBase64 = openssl_decrypt($imageBase64, $cipher, $secret);
     
+    // Start time
+    $start = microtime(true);
 
+    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret);
+
+    // End time
+    $end = microtime(true);
+
+    // Time taken
+    $time_taken = $end - $start;
+    echo "Time taken to encrypt the file: " . $time_taken . " seconds";
+    
     User::create([
         'name' => $name,
         'username' => $username,
@@ -117,7 +126,8 @@ public function store(Request $request)
         'image' => $imageBase64
     ]);
 
-    return redirect('/login')->with('success', 'Registration Success!');
+    // return redirect('/login')->with('success', 'Registration Success!');
+    return redirect('/login')->with('success', 'Registration Success!')->with('time_taken', $time_taken);
 }
 
 

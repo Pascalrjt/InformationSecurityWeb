@@ -18,12 +18,17 @@
   }
 </style>
 
+<!-- <div class="alert alert-success">
+        Time taken to encrypt the file: {{ session('time_taken') }} seconds
+</div> -->
+
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
       @if (session()->has('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-          {{ session('success') }}
+          {{ session('success') }} <br>  
+          ID card encrypted in: {{ session('time_taken') }} seconds
         </div>
       @endif
       @if (session()->has('fail'))

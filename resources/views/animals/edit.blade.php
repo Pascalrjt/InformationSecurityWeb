@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="formFile" class="form-label form-dark bg-dark color-dark text-white">Upload Image</label>
+                            <label for="formFile" class="form-label form-control form-dark bg-dark color-dark text-white">Upload Image</label>
                             <input class="form-control form-dark bg-dark color-dark text-white" type="file" id="formFile">
                           </div>
 
