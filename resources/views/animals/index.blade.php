@@ -4,6 +4,12 @@
     <div class="row mx-5 justify-content-center">
         @foreach ($animals as $item)
             <div class="card mx-2 bg-dark text-white animal-card" style="width: 300px;">
+            @if (session()->has('success'))
+                <div class="alert alert-success alert-dismissible fade show small-font" role="alert">
+                 {{ session('success') }} <br>  
+                Animal name encrypted in: {{ session('animal_des_time_taken') }} ms (DES) <br>
+            </div>
+            @endif
                 <a href="/animals/{{$item->id}}">
                     @if ($item->image)
                         <div style="width: 100%; height: 300px; margin: 10px 0; position: relative;">

@@ -10,21 +10,18 @@ class AnimalsController extends Controller
 {
 
     public function index()
-    {
-        // Use the same secret key used for encryption
-        $secret = hex2bin("1B6D4B4A5254AC");
-        $animals = Animals::all();
+{
+    // Use the same secret key used for encryption
+    $secret = hex2bin("1B6D4B4A5254AC");
+    $animals = Animals::all();
 
+    // Decrypt the names of all animals
         foreach ($animals as $animal) {
-            // Decode the base64 encoded name
             $encryptedData = base64_decode($animal->name);
             $iv = substr($encryptedData, 0, 8);
             $data = substr($encryptedData, 8);
 
-            // Decrypt the name
             $decryptedName = openssl_decrypt($data, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
-
-            // Remove null padding
             $decryptedName = rtrim($decryptedName, "\0");
 
             // Update the name in the model
@@ -33,6 +30,7 @@ class AnimalsController extends Controller
 
         return view('animals.index', compact('animals'));
     }
+
 
     public function imageToBase64($imagePath) {
         try {
@@ -77,15 +75,20 @@ class AnimalsController extends Controller
 
         $image = $request->file('image');
         $imageBase64 = base64_encode(file_get_contents($image));
-        
+        $des = "des-ecb";
         $secret = hex2bin("1B6D4B4A5254AC");;
         $iv = openssl_random_pseudo_bytes(8); // Generate a random IV
         $paddedName = str_pad($request->name, 8, "\0"); // Pad the name to 8 bytes if needed
-        $encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
+        // $encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
 
         // Store the encrypted name in the database
+        
+        $animalDesstart = microtime(true);
+        $encryptedName = openssl_encrypt($imageBase64, $des, $secret);
+        $animalDESend = microtime(true);
+        $animalDEStime_taken = ($animalDESend - $animalDesstart) * 1000; 
+        echo "Time taken to encrypt Animal with DES-ECB: " . $animalDEStime_taken . " ms";
         $encryptedName = base64_encode($iv . $encryptedName);
-
         Animals::create([
             'name' => $encryptedName, // Store the encrypted name
             'center_id' => $request->center_id,
@@ -95,20 +98,27 @@ class AnimalsController extends Controller
             'image' => $imageBase64
         ]);
 
-        return redirect('/animals');
+        return redirect('/animals')->with('success', 'successfully added!')->with('animal_des_time_taken', $animalDEStime_taken);
     }
 
     public function show($id)
     {
-        $animals = Animals::findorfail($id);
+        $animal = Animals::findOrFail($id);
+
+        // Decrypt the name using DES-ECB
+        $secret = hex2bin("1B6D4B4A5254AC");
+        $encryptedData = base64_decode($animal->name);
+        $iv = substr($encryptedData, 0, 8);
+        $data = substr($encryptedData, 8);
 
         // Decrypt the name
-        $secret = "fadhlanganteng12"; // Replace with your secret key
-        $animals->name = openssl_decrypt($animals->name, "AES-128-ECB", $secret);
+        $decryptedName = openssl_decrypt($data, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
+        $decryptedName = rtrim($decryptedName, "\0");
 
-        return view('animals.show', compact('animals'));
+        $animal->name = $decryptedName;
+
+        return view('animals.show', compact('animal'));
     }
-
 
     public function edit($id)
     {
