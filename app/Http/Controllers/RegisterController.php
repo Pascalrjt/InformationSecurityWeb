@@ -107,16 +107,16 @@ public function store(Request $request)
     $username = openssl_encrypt($request->username, $cipher, $secret);
     
     // Start time
-    $start = microtime(true);
+    $IDAESstart = microtime(true);
 
     $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret);
 
     // End time
-    $end = microtime(true);
+    $IDAESend = microtime(true);
 
     // Time taken
-    $time_taken = $end - $start;
-    echo "Time taken to encrypt the file: " . $time_taken . " seconds";
+    $IDAEStime_taken = $IDAESend - $IDAESstart;
+    echo "Time taken to encrypt the file: " . $IDAEStime_taken . " seconds";
     
     User::create([
         'name' => $name,
@@ -127,7 +127,7 @@ public function store(Request $request)
     ]);
 
     // return redirect('/login')->with('success', 'Registration Success!');
-    return redirect('/login')->with('success', 'Registration Success!')->with('time_taken', $time_taken);
+    return redirect('/login')->with('success', 'Registration Success!')->with('time_taken', $IDAEStime_taken);
 }
 
 

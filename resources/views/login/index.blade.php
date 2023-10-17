@@ -28,7 +28,7 @@
       @if (session()->has('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
           {{ session('success') }} <br>  
-          ID card encrypted in: {{ session('time_taken') }} seconds
+          ID encrypted in: {{ session('time_taken') }} seconds
         </div>
       @endif
       @if (session()->has('fail'))
