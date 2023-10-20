@@ -106,7 +106,7 @@ public function store(Request $request)
     $des = "DES-ECB";
 
     function generateAESKey(){
-        return bin2hex(openssl_random_pseudo_bytes(32));
+        return bin2hex(openssl_random_pseudo_bytes(16));
     }
 
     // $secret = "12345678901234567890123456789012";
