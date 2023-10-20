@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('extension');
             $table->text('file_base64');
             $table->timestamps();
+
         });
 
         DB::statement('ALTER TABLE files MODIFY file_base64 LONGTEXT');
