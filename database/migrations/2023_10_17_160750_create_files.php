@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('files', function (Blueprint $table) {
             $table->id();
             $table->string('filename');
-            $table->id('extension');
+            $table->string('extension');
             $table->text('file_base64');
             $table->timestamps();
 
