@@ -32,13 +32,13 @@ class AnimalsController extends Controller
     }
 
 
-    public function imageToBase64($imagePath) {
+    public function imageBase64($imagePath) {
         try {
             $imageData = file_get_contents($imagePath);
             if ($imageData === false) {
                 throw new Exception("Failed to read the image file.");
             }
-            
+
             $base64Encoded = base64_encode($imageData);
             return $base64Encoded;
         } catch (Exception $e) {
@@ -46,13 +46,13 @@ class AnimalsController extends Controller
             return null;
         }
     }
-    
+
     public function create()
     {
         $centers = Centers::all();
         return view('animals.create', compact('centers'));
     }
-    
+
 
     public function store(Request $request)
     {
@@ -82,11 +82,11 @@ class AnimalsController extends Controller
         // $encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
 
         // Store the encrypted name in the database
-        
+
         $animalDesstart = microtime(true);
         $encryptedName = openssl_encrypt($imageBase64, $des, $secret);
         $animalDESend = microtime(true);
-        $animalDEStime_taken = ($animalDESend - $animalDesstart) * 1000; 
+        $animalDEStime_taken = ($animalDESend - $animalDesstart) * 1000;
         echo "Time taken to encrypt Animal with DES-ECB: " . $animalDEStime_taken . " ms";
         $encryptedName = base64_encode($iv . $encryptedName);
         Animals::create([
@@ -144,7 +144,7 @@ class AnimalsController extends Controller
         ]);
 
         $animals = Animals::findorfail($id);
-        
+
         $animals_data = [
             'name' => $request->name,
             'center_id' => $request->center_id,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Encryption\Encryption;
 use Illuminate\Support\Facades\Crypt;
 
 class RegisterController extends Controller
@@ -106,6 +107,10 @@ public function store(Request $request)
 
     //Keys
     $secret = "12345678901234567890123456789012";
+
+
+
+
     $rc4key = "2B7E151628AED2A6ABF7158809CF4F3C";
     $deskey = "133457799BBCDFF1A";
 
