@@ -57,6 +57,8 @@ class filesController extends Controller {
             'extension' => $fileExtension,
             'file_base64' => $AESBase64
         ]);
+
+        return redirect('/files')->with('success', 'File Uploaded!');
     }
 
 }
