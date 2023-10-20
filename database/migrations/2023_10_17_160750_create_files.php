@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
-            $table->text('pdf');
+            $table->string('filename');
+            $table->string('extension');
+            $table->text('file_base64');
+            $table->timestamps();
         });
 
-        DB::statement('ALTER TABLE files MODIFY pdf LONGTEXT');
+        DB::statement('ALTER TABLE files MODIFY file_base64 LONGTEXT');
     }
 
     /**

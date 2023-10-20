@@ -6,8 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Files extends Model {
-    use HasFactory;
+    // use HasFactory;
 
-    protected $table = "files";
-    protected $fillable = ["pdf"];
+    protected $fillable = [
+        'filename',
+        'extension',
+        'file_base64'
+    ];
 }

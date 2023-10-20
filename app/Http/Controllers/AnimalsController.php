@@ -39,7 +39,7 @@ class AnimalsController extends Controller
             if ($imageData === false) {
                 throw new Exception("Failed to read the image file.");
             }
-            
+
             $base64Encoded = base64_encode($imageData);
             return $base64Encoded;
         } catch (Exception $e) {
@@ -47,12 +47,13 @@ class AnimalsController extends Controller
             return null;
         }
     }
-    
+
     public function create()
     {
         $centers = Centers::all();
         return view('animals.create', compact('centers'));
     }
+
     // public function store(Request $request)
     // {
     //     $request->validate([
@@ -94,6 +95,10 @@ class AnimalsController extends Controller
     //     return redirect('/animals')->with('success', 'Successfully added!');
     // }
     
+
+
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -111,10 +116,20 @@ class AnimalsController extends Controller
             'desc.required' => 'Description can\'t be empty!'
         ]);
 
+
         $image = $request->file('image');
         $imageBase64 = base64_encode(file_get_contents($image));
 
         // Name encryption code using DES-CBC
+        $name = $request->input('name');
+        $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
+        $nameIv = 'IJKLMNOP'; // Use a valid IV
+
+
+        $image = $request->file('image');
+        $imageBase64 = base64_encode(file_get_contents($image));
+
+        // Name encryption code
         $name = $request->input('name');
         $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
         $nameIv = 'IJKLMNOP'; // Use a valid IV
@@ -135,6 +150,8 @@ class AnimalsController extends Controller
     }
     
 
+
+
     public function show($id)
     {
         $animal = Animals::findOrFail($id);
@@ -148,6 +165,7 @@ class AnimalsController extends Controller
         $animal->name = $decryptedName;
 
         return view('animals.show', compact('animal'));
+
     }
     // public function show($id)
     // {
@@ -193,7 +211,7 @@ class AnimalsController extends Controller
         ]);
 
         $animals = Animals::findorfail($id);
-        
+
         $animals_data = [
             'name' => $request->name,
             'center_id' => $request->center_id,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Encryption\Encryption;
 use Illuminate\Support\Facades\Crypt;
 
 class RegisterController extends Controller
@@ -25,7 +26,7 @@ class RegisterController extends Controller
     //     ]);
 
     //     $validatedData['password'] = bcrypt($validatedData['password']);
-        
+
     //     User::create($validatedData);
 
     //     return redirect('/login')->with('success', 'Registration Success!');
@@ -37,7 +38,7 @@ class RegisterController extends Controller
             if ($imageData === false) {
                 throw new Exception("Failed to read the image file.");
             }
-            
+
             $base64Encoded = base64_encode($imageData);
             return $base64Encoded;
         } catch (Exception $e) {
@@ -66,7 +67,7 @@ class RegisterController extends Controller
 
 //     $cipher = "AES-128-ECB";
 //     $secret = "fadhlanganteng12";
-    
+
 //     $validatedData['password'] = bcrypt($validatedData['password']);
 
 //     // Encrypt the data before storing
@@ -77,7 +78,7 @@ class RegisterController extends Controller
 //     }
 
 //     User::create($validatedData);
-    
+
 
 //     return redirect('/login')->with('success', 'Registration Success!');
 // }
@@ -100,48 +101,61 @@ public function store(Request $request)
     }
 
     //Ciphers
-    $cipher = "AES-128-ECB";
+    $cipher = "AES-256-CBC";
     $rc4 = "rc4";
     $des = "DES-ECB";
 
-    //Keys
-    $secret = "fadhlanganteng12";
-    $rc4key = "2B7E151628AED2A6ABF7158809CF4F3C"; 
+    function generateAESKey(){
+        return bin2hex(openssl_random_pseudo_bytes(32));
+    }
+
+    $secret = "12345678901234567890123456789012";
+
+    $secret1 = generateAESKey();
+
+
+
+
+    $rc4key = "2B7E151628AED2A6ABF7158809CF4F3C";
     $deskey = "133457799BBCDFF1A";
 
+    //Iv
+    $options = 0;
+    $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
+
     //User profile encryption
-    $name = openssl_encrypt($request->name, $cipher, $secret);
-    $username = openssl_encrypt($request->username, $cipher, $secret);
-    
+    $name = openssl_encrypt($request->name, $cipher, $secret1, $options, $iv);
+    $username = openssl_encrypt($request->username, $cipher, $secret1, $options, $iv);
+
     // AES Encryption for ID card
     $IDAESstart = microtime(true);
-    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret);
+    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret1, $options, $iv);
     $IDAESend = microtime(true);
-    $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000; 
+    $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000;
     echo "Time taken to encrypt ID with AES-128-ECB: " . $IDAEStime_taken . " ms";
 
     // RC4 Encryption for ID card
     $IDRC4start = microtime(true);
     $imageBase64rc4 = openssl_encrypt($imageBase64, $rc4, $rc4key);
     $IDRC4end = microtime(true);
-    $IDRC4time_taken = ($IDRC4end - $IDRC4start) * 1000; 
+    $IDRC4time_taken = ($IDRC4end - $IDRC4start) * 1000;
     echo "Time taken to encrypt ID with RC4: " . $IDRC4time_taken . " ms";;
 
     // DES Encryption for ID Card
     $IDDESstart = microtime(true);
     $imageBase64des = openssl_encrypt($imageBase64, $des, $deskey);
     $IDDESend = microtime(true);
-    $IDDEStime_taken = ($IDDESend - $IDDESstart) * 1000; 
+    $IDDEStime_taken = ($IDDESend - $IDDESstart) * 1000;
     echo "Time taken to encrypt ID with DES-ECB: " . $IDDEStime_taken . " ms";
-    
+
     User::create([
         'name' => $name,
         'username' => $username,
         'email' => $request->email,
         'password' => bcrypt($request->password),
-        'image' => $imageBase64
+        'image' => $imageBase64,
+        'key' => $secret1
     ]);
-
     // return redirect('/login')->with('success', 'Registration Success!');
     return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken);;
 }

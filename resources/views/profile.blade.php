@@ -22,7 +22,8 @@
             <h2>ID Image</h2>
             <div>
                 <!-- <img src="data:image/png;base64,{{ Auth::user()->image }}" alt="User Image"  style="width: 100%; height: 100%; object-fit: cover;"> -->
-                <img src="data:image/png;base64,{{ $decryptedImage }}" alt="User Image"  style="width: 100%; height: 100%; object-fit: cover;">
+                {{-- <img src="data:image/png;base64,{{ $decryptedImage }}" alt="User Image"  style="width: 100%; height: 100%; object-fit: cover;"> --}}
+                <img src="data:image/png;base64,{{ $decryptedImage }}" alt="User Image" style="width: 30%; height: 30%; object-fit: cover;">
             </div>
         </div>
         <div class="profile">
