@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Animals;
 use Illuminate\Http\Request;
 use \App\Models\Centers;
+use Illuminate\Support\Facades\Crypt;
 
 class AnimalsController extends Controller
 {
@@ -32,7 +33,7 @@ class AnimalsController extends Controller
     }
 
 
-    public function imageBase64($imagePath) {
+    public function imageToBase64($imagePath) {
         try {
             $imageData = file_get_contents($imagePath);
             if ($imageData === false) {
@@ -63,34 +64,25 @@ class AnimalsController extends Controller
             'center_id' => 'required',
             'desc' => 'required|max:2048',
             'image' => 'image|file|max:2048'
-        ],
-        [
+        ], [
             'name.required' => 'Name can\'t be empty!',
-            'breed.required' => 'NRP can\'t be empty!',
-            'age.required' => 'Jurusan can\'t be empty!',
-            'center_id' => 'Please choose your angkatan',
-            'desc.required' => 'desc can\'t be empty!'
+            'breed.required' => 'Breed can\'t be empty!',
+            'age.required' => 'Age can\'t be empty!',
+            'center_id' => 'Please choose your center',
+            'desc.required' => 'Description can\'t be empty!'
         ]);
-
-
         $image = $request->file('image');
         $imageBase64 = base64_encode(file_get_contents($image));
-        $des = "des-ecb";
-        $secret = hex2bin("1B6D4B4A5254AC");;
-        $iv = openssl_random_pseudo_bytes(8); // Generate a random IV
-        $paddedName = str_pad($request->name, 8, "\0"); // Pad the name to 8 bytes if needed
-        // $encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
 
-        // Store the encrypted name in the database
+        // Name encryption code
+        $name = $request->input('name');
+        $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
+        $nameIv = 'IJKLMNOP'; // Use a valid IV
+        $encryptedName = Crypt::encryptString($name, false, $nameEncryptionKey, $nameIv);
 
-        $animalDesstart = microtime(true);
-        $encryptedName = openssl_encrypt($imageBase64, $des, $secret);
-        $animalDESend = microtime(true);
-        $animalDEStime_taken = ($animalDESend - $animalDesstart) * 1000;
-        echo "Time taken to encrypt Animal with DES-ECB: " . $animalDEStime_taken . " ms";
-        $encryptedName = base64_encode($iv . $encryptedName);
+        // Store data in the 'animals' table
         Animals::create([
-            'name' => $encryptedName, // Store the encrypted name
+            'name' => $encryptedName,
             'center_id' => $request->center_id,
             'breed' => $request->breed,
             'age' => $request->age,
@@ -98,26 +90,24 @@ class AnimalsController extends Controller
             'image' => $imageBase64
         ]);
 
-        return redirect('/animals')->with('success', 'successfully added!')->with('animal_des_time_taken', $animalDEStime_taken);
+        return redirect('/animals')->with('success', 'Successfully added!');
     }
+
+
 
     public function show($id)
     {
         $animal = Animals::findOrFail($id);
 
-        // Decrypt the name using DES-ECB
-        $secret = hex2bin("1B6D4B4A5254AC");
-        $encryptedData = base64_decode($animal->name);
-        $iv = substr($encryptedData, 0, 8);
-        $data = substr($encryptedData, 8);
-
-        // Decrypt the name
-        $decryptedName = openssl_decrypt($data, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv);
-        $decryptedName = rtrim($decryptedName, "\0");
+        // Decrypt the name using DES-CBC
+        $nameEncryptionKey = 'encryptkeyname'; // Use the same key as in the store method
+        $nameIv = 'IJKLMNOP'; // Use the same IV as in the store method
+        $decryptedName = Crypt::decryptString($animal->name, false, $nameEncryptionKey, $nameIv);
 
         $animal->name = $decryptedName;
 
         return view('animals.show', compact('animal'));
+
     }
 
     public function edit($id)
