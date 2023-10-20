@@ -105,8 +105,13 @@ public function store(Request $request)
     $rc4 = "rc4";
     $des = "DES-ECB";
 
-    //Keys
+    function generateAESKey(){
+        return bin2hex(openssl_random_pseudo_bytes(32));
+    }
+
     $secret = "12345678901234567890123456789012";
+
+    $secret1 = generateAESKey();
 
 
 
@@ -119,12 +124,12 @@ public function store(Request $request)
     $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
 
     //User profile encryption
-    $name = openssl_encrypt($request->name, $cipher, $secret, $options, $iv);
-    $username = openssl_encrypt($request->username, $cipher, $secret, $options, $iv);
+    $name = openssl_encrypt($request->name, $cipher, $secret1, $options, $iv);
+    $username = openssl_encrypt($request->username, $cipher, $secret1, $options, $iv);
 
     // AES Encryption for ID card
     $IDAESstart = microtime(true);
-    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret, $options, $iv);
+    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret1, $options, $iv);
     $IDAESend = microtime(true);
     $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000;
     echo "Time taken to encrypt ID with AES-128-ECB: " . $IDAEStime_taken . " ms";
@@ -148,9 +153,9 @@ public function store(Request $request)
         'username' => $username,
         'email' => $request->email,
         'password' => bcrypt($request->password),
-        'image' => $imageBase64
+        'image' => $imageBase64,
+        'key' => $secret1
     ]);
-
     // return redirect('/login')->with('success', 'Registration Success!');
     return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken);;
 }
