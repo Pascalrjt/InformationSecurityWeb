@@ -109,7 +109,7 @@ public function store(Request $request)
         return bin2hex(openssl_random_pseudo_bytes(32));
     }
 
-    $secret = "12345678901234567890123456789012";
+    // $secret = "12345678901234567890123456789012";
 
     $secret1 = generateAESKey();
 
@@ -125,7 +125,10 @@ public function store(Request $request)
 
     //User profile encryption
     $name = openssl_encrypt($request->name, $cipher, $secret1, $options, $iv);
-    $username = openssl_encrypt($request->username, $cipher, $secret1, $options, $iv);
+    // $username = openssl_encrypt($request->username, $cipher, $secret1, $options, $iv);
+    $email = openssl_encrypt($request->email, $cipher, $secret1, $options, $iv);
+    $username = $request->username;
+
 
     // AES Encryption for ID card
     $IDAESstart = microtime(true);
@@ -151,7 +154,7 @@ public function store(Request $request)
     User::create([
         'name' => $name,
         'username' => $username,
-        'email' => $request->email,
+        'email' => $email,
         'password' => bcrypt($request->password),
         'image' => $imageBase64,
         'key' => $secret1

@@ -18,7 +18,7 @@
   }
 
   .small-font {
-    font-size: 12px; 
+    font-size: 12px;
   }
 
 </style>
@@ -32,7 +32,7 @@
     <div class="col-md-6">
       @if (session()->has('success'))
         <div class="alert alert-success alert-dismissible fade show small-font" role="alert">
-          {{ session('success') }} <br>  
+          {{ session('success') }} <br>
           ID encrypted in: {{ session('id_aes_time_taken') }} ms (AES)<br>
           ID encrypted in: {{ session('id_rc4_time_taken') }} ms (RC4) <br>
           ID encrypted in: {{ session('id_des_time_taken') }} ms (DES) <br>
@@ -52,9 +52,13 @@
           <form action="/login" method="post">
             @csrf
 
-            <div class="mb-3">
+            {{-- <div class="mb-3">
               <label for="email" class="form-label">Email address</label>
               <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com" autofocus required>
+            </div> --}}
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="username" name="username" class="form-control" id="username" placeholder="username123" autofocus required>
             </div>
 
             <div class="mb-3">
