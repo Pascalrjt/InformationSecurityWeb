@@ -20,7 +20,7 @@ return new class extends Migration
 
         });
 
-        DB::statement('ALTER TABLE files MODIFY pdf LONGTEXT');
+        DB::statement('ALTER TABLE files MODIFY file_base64 LONGTEXT');
     }
 
     /**
