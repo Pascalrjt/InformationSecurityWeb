@@ -65,6 +65,8 @@ public function imageToBase64($imagePath) {
 
 ![AESvsRC4vsDES](https://cdn.discordapp.com/attachments/1160530410460151899/1163875724109819905/image.png?ex=65412abc&is=652eb5bc&hm=573899e36efa4b6defe30fac73a8de3ae91b3c8be90183aad0626a7f710409f0&)
 
+- As we can see, here is the comparison between the performance of the three encryption algorithms. As we can see `DES` was the fastest with `RC4` being second fastest and `AES` being the slowest among the three. We still chose to use AES in this case as it is the most secure among the three.
+
 Database:<br>
 ![UserDatabase](https://cdn.discordapp.com/attachments/1160530410460151899/1163427682441244733/image.png?ex=653f8976&is=652d1476&hm=c4afa6faf5b9a5cd2704e5138b111a8c6bc05837e9d68d65434fa4453ed4806a&)
 
