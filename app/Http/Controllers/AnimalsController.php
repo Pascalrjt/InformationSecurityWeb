@@ -11,7 +11,7 @@ class AnimalsController extends Controller
 {
 
     public function index()
-{
+    {
     // Use the same secret key used for encryption
     $secret = hex2bin("1B6D4B4A5254AC");
     $animals = Animals::all();
@@ -98,17 +98,19 @@ class AnimalsController extends Controller
     public function show($id)
     {
         $animal = Animals::findOrFail($id);
+        $secret = 'encryptkeyname'; 
+        $iv = 'IJKLMNOP'; 
+        $encryptedData = base64_decode($animal->name);
 
-        // Decrypt the name using DES-CBC
-        $nameEncryptionKey = 'encryptkeyname'; // Use the same key as in the store method
-        $nameIv = 'IJKLMNOP'; // Use the same IV as in the store method
-        $decryptedName = Crypt::decryptString($animal->name, false, $nameEncryptionKey, $nameIv);
+        $decryptedName = openssl_decrypt($encryptedData, 'des-cbc', $secret, OPENSSL_RAW_DATA, $iv);
+        $decryptedName = rtrim($decryptedName, "\0");
 
         $animal->name = $decryptedName;
 
         return view('animals.show', compact('animal'));
-
     }
+
+
 
     public function edit($id)
     {
