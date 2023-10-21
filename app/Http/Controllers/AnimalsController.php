@@ -6,6 +6,12 @@ use App\Models\Animals;
 use Illuminate\Http\Request;
 use \App\Models\Centers;
 use Illuminate\Support\Facades\Crypt;
+use Encryption\Encryption;
+use Encryption\Exception\EncryptionException;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\File;
 
 class AnimalsController extends Controller
 {
@@ -94,6 +100,87 @@ class AnimalsController extends Controller
     //     return redirect('/animals')->with('success', 'Successfully added!');
     // }
     
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required',
+    //         'breed' => 'required',
+    //         'age' => 'required|numeric',
+    //         'center_id' => 'required',
+    //         'desc' => 'required|max:2048',
+    //         'image' => 'image|file|max:2048'
+    //     ], [
+    //         'name.required' => 'Name can\'t be empty!',
+    //         'breed.required' => 'Breed can\'t be empty!',
+    //         'age.required' => 'Age can\'t be empty!',
+    //         'center_id' => 'Please choose your center',
+    //         'desc.required' => 'Description can\'t be empty!'
+    //     ]);
+
+    //     $image = $request->file('image');
+    //     $imageBase64 = base64_encode(file_get_contents($image));
+
+    //     // Name encryption code using DES-CBC
+    //     $name = $request->input('name');
+    //     $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
+    //     $nameIv = 'IJKLMNOP'; // Use a valid IV
+
+    //     $encryptedName = Crypt::encryptString($name, false, $nameEncryptionKey, $nameIv);
+
+    //     // Store data in the 'animals' table
+    //     Animals::create([
+    //         'name' => $encryptedName,
+    //         'center_id' => $request->center_id,
+    //         'breed' => $request->breed,
+    //         'age' => $request->age,
+    //         'desc' => $request->desc,
+    //         'image' => $imageBase64
+    //     ]);
+
+    //     return redirect('/animals')->with('success', 'Successfully added!');
+    // }
+    
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required',
+    //         'breed' => 'required',
+    //         'age' => 'required|numeric',
+    //         'center_id' => 'required',
+    //         'desc' => 'required|max:2048',
+    //         'image' => 'image|file|max:2048'
+    //     ], [
+    //         'name.required' => 'Name can\'t be empty!',
+    //         'breed.required' => 'Breed can\'t be empty!',
+    //         'age.required' => 'Age can\'t be empty!',
+    //         'center_id' => 'Please choose your center',
+    //         'desc.required' => 'Description can\'t be empty!'
+    //     ]);
+
+    //     $image = $request->file('image');
+    //     $imageBase64 = base64_encode(file_get_contents($image));
+
+    //     // Name encryption code using DES-CBC
+    //     $name = $request->input('name');
+    //     $key = base64_decode("RRZy0njZDzw=");
+    //     $iv = base64_decode("p/34qWLNYfg=");
+
+    //     $encryptedName = openssl_encrypt($name, $cipher, $key, 0, $iv);
+        
+
+    //     // Store data in the 'animals' table
+    //     Animals::create([
+    //         'name' => $encryptedName,
+    //         'center_id' => $request->center_id,
+    //         'breed' => $request->breed,
+    //         'age' => $request->age,
+    //         'desc' => $request->desc,
+    //         'image' => $imageBase64
+    //     ]);
+
+    //     return redirect('/animals')->with('success', 'Successfully added!');
+    // }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -116,14 +203,17 @@ class AnimalsController extends Controller
 
         // Name encryption code using DES-CBC
         $name = $request->input('name');
-        $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
-        $nameIv = 'IJKLMNOP'; // Use a valid IV
+        $encryption = Encryption::getEncryptionObject('des-cbc');
+        $iv = 'ABCDEFGH';
+        $key = 'JKLMNOP';
+        $encName = $encryption->encrypt($fileBase64, $encryptionKey, $iv);
 
-        $encryptedName = Crypt::encryptString($name, false, $nameEncryptionKey, $nameIv);
+        
+        
 
         // Store data in the 'animals' table
         Animals::create([
-            'name' => $encryptedName,
+            'name' => $encName,
             'center_id' => $request->center_id,
             'breed' => $request->breed,
             'age' => $request->age,
@@ -135,20 +225,38 @@ class AnimalsController extends Controller
     }
     
 
+    // public function show($id)
+    // {
+    //     $animal = Animals::findOrFail($id);
+
+    //     // Decrypt the name using DES-CBC
+    //     $nameEncryptionKey = 'encryptkeyname'; // Use the same key as in the store method
+    //     $nameIv = 'IJKLMNOP'; // Use the same IV as in the store method
+
+    //     $decryptedName = Crypt::decryptString($animal->name, false, $nameEncryptionKey, $nameIv);
+
+    //     $animal->name = $decryptedName;
+
+    //     return view('animals.show', compact('animal'));
+    // }
+
     public function show($id)
     {
         $animal = Animals::findOrFail($id);
+        $key = base64_decode("RRZy0njZDzw=");
+        $iv = base64_decode("p/34qWLNYfg=");
 
-        // Decrypt the name using DES-CBC
-        $nameEncryptionKey = 'encryptkeyname'; // Use the same key as in the store method
-        $nameIv = 'IJKLMNOP'; // Use the same IV as in the store method
+        // Decrypt the name
+        $encryptedName = $animal->name;
+        $decryptedName = Crypt::decryptString($encryptedName, false, $key, $iv);
 
-        $decryptedName = Crypt::decryptString($animal->name, false, $nameEncryptionKey, $nameIv);
-
+        // Replace the encrypted name with the decrypted name in the $animal object
         $animal->name = $decryptedName;
 
         return view('animals.show', compact('animal'));
     }
+
+
     // public function show($id)
     // {
     //     $animal = Animals::findOrFail($id);
