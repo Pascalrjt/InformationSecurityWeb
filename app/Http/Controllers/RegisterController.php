@@ -109,30 +109,54 @@ public function store(Request $request)
         return bin2hex(openssl_random_pseudo_bytes(16));
     }
 
+    function generateRC4Key() {
+        $key = '';
+        $characters = '0123456789ABCDEF';
+        $length = 32; // 32 characters for a 256-bit key
+
+        for ($i = 0; $i < $length; $i++) {
+            $key .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return $key;
+    }
+
+    function generateDESKey() {
+        $key = '';
+        $characters = '0123456789ABCDEF';
+        $length = 16; // 16 characters for a 128-bit key
+
+        for ($i = 0; $i < $length; $i++) {
+            $key .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return $key;
+    }
+
     // $secret = "12345678901234567890123456789012";
 
-    $secret1 = generateAESKey();
+    //generating the keys
+    $aeskey = generateAESKey();
+    $rc4key = generateRC4Key();
+    $deskey = generateDESKey();
 
-
-
-
-    $rc4key = "2B7E151628AED2A6ABF7158809CF4F3C";
-    $deskey = "133457799BBCDFF1A";
+    // $rc4key = "2B7E151628AED2A6ABF7158809CF4F3C";
+    // $deskey = "133457799BBCDFF1A";
 
     //Iv
     $options = 0;
     $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
 
     //User profile encryption
-    $name = openssl_encrypt($request->name, $cipher, $secret1, $options, $iv);
-    // $username = openssl_encrypt($request->username, $cipher, $secret1, $options, $iv);
-    $email = openssl_encrypt($request->email, $cipher, $secret1, $options, $iv);
+    $name = openssl_encrypt($request->name, $cipher, $aeskey, $options, $iv);
+    // $username = openssl_encrypt($request->username, $cipher, $aeskey, $options, $iv);
+    $email = openssl_encrypt($request->email, $cipher, $aeskey, $options, $iv);
     $username = $request->username;
 
 
     // AES Encryption for ID card
     $IDAESstart = microtime(true);
-    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $secret1, $options, $iv);
+    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $aeskey, $options, $iv);
     $IDAESend = microtime(true);
     $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000;
     echo "Time taken to encrypt ID with AES-128-ECB: " . $IDAEStime_taken . " ms";
@@ -157,7 +181,7 @@ public function store(Request $request)
         'email' => $email,
         'password' => bcrypt($request->password),
         'image' => $imageBase64,
-        'key' => $secret1
+        'key' => $aeskey
     ]);
     // return redirect('/login')->with('success', 'Registration Success!');
     return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken);;
