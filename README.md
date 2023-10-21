@@ -70,6 +70,8 @@ public function imageToBase64($imagePath) {
 Database:<br>
 ![UserDatabase](https://cdn.discordapp.com/attachments/1160530410460151899/1163427682441244733/image.png?ex=653f8976&is=652d1476&hm=c4afa6faf5b9a5cd2704e5138b111a8c6bc05837e9d68d65434fa4453ed4806a&)
 
+## Analysis on Encryption Time
+
 ## Viewing user profile / data
 - After the user logs-in, they are able to view their data by going to the `profile` menu.
 - Once they click it, the website will redirect them to their profile where it will pull their data from the database and decrypt it using `openssl_decrypt` with the same `cipher` and `key` as it was encrypted. Their `ID card` image remains in base64 after the decryption as html supports displaying base64 images.
