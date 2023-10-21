@@ -74,7 +74,7 @@ Database:<br>
 
 ![encryptiontime](https://media.discordapp.net/attachments/1160530410460151899/1165261958078021663/image.png?ex=654635c4&is=6533c0c4&hm=6868822828e6ca6a5ac4d524f6f25c63f511a75be4ea384e788ae5f253a6121a&=)
 
-- In our encryption, it turns out that RC4 has the slowest encryption time. This occurs because PHP doesn't directly support this encryption algorithm. Because of this, we have to manually make this encryption type ourself. This is why RC4 has the slowest time in our website.
+- In our encryption, it turns out that `RC4` has the slowest encryption time. This occurs because PHP doesn't directly support this encryption algorithm. Because of this, we have to manually make this encryption type ourself. This is why `RC4` has the slowest time in our website with average encryption time of `0.209 ms`, it was followed by `AES` with an average encryption time of `43.089 ms` and then `DES` with an average encryption time of `0.1411 ms`
 
 ## Analysis on Encryption Size
 ![encryption size](https://cdn.discordapp.com/attachments/1160530410460151899/1165262008405458955/image.png?ex=654635d0&is=6533c0d0&hm=cff9dedeebc9a199aa56c2320ca049974d893d8583648ac828d92b6fd458fb9e&)
