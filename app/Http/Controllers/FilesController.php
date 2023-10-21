@@ -30,6 +30,7 @@ class filesController extends Controller {
         ]);
 
         $fileUpload = $request->file('file');
+
         if ($fileUpload) {
             $fileBase64 = base64_encode(file_get_contents($fileUpload));
         } else {
@@ -50,7 +51,8 @@ class filesController extends Controller {
         $options = 0;
         $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
 
-        $AESBase64 = openssl_encrypt($request->file, $cipher, $secret, $options, $iv);
+        // $AESBase64 = openssl_encrypt($request->file, $cipher, $secret, $options, $iv);
+        $AESBase64 = openssl_encrypt($fileBase64, $cipher, $secret, $options, $iv);
 
         Files::create([
             'filename' => $fileName,
