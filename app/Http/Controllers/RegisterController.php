@@ -102,35 +102,61 @@ public function store(Request $request)
 
     //Ciphers
     $cipher = "AES-256-CBC";
-    $rc4 = "rc4";
+    // $rc4 = "rc4";
     $des = "DES-ECB";
+
+    function rc4($key, $str) {
+        $s = array();
+        for ($i = 0; $i < 256; $i++) {
+            $s[$i] = $i;
+        }
+        $j = 0;
+        for ($i = 0; $i < 256; $i++) {
+            $j = ($j + $s[$i] + ord($key[$i % strlen($key)])) % 256;
+            $x = $s[$i];
+            $s[$i] = $s[$j];
+            $s[$j] = $x;
+        }
+        $i = 0;
+        $j = 0;
+        $res = '';
+        for ($y = 0; $y < strlen($str); $y++) {
+            $i = ($i + 1) % 256;
+            $j = ($j + $s[$i]) % 256;
+            $x = $s[$i];
+            $s[$i] = $s[$j];
+            $s[$j] = $x;
+            $res .= $str[$y] ^ chr($s[($s[$i] + $s[$j]) % 256]);
+        }
+        return $res;
+    }
 
     function generateAESKey(){
         return bin2hex(openssl_random_pseudo_bytes(16));
     }
 
     function generateRC4Key() {
-        $key = '';
+        $keyrc4 = '';
         $characters = '0123456789ABCDEF';
         $length = 32; // 32 characters for a 256-bit key
 
         for ($i = 0; $i < $length; $i++) {
-            $key .= $characters[rand(0, strlen($characters) - 1)];
+            $keyrc4 .= $characters[rand(0, strlen($characters) - 1)];
         }
 
-        return $key;
+        return $keyrc4;
     }
 
     function generateDESKey() {
-        $key = '';
+        $keydes = '';
         $characters = '0123456789ABCDEF';
         $length = 16; // 16 characters for a 128-bit key
 
         for ($i = 0; $i < $length; $i++) {
-            $key .= $characters[rand(0, strlen($characters) - 1)];
+            $keydes .= $characters[rand(0, strlen($characters) - 1)];
         }
 
-        return $key;
+        return $keydes;
     }
 
     // $secret = "12345678901234567890123456789012";
@@ -156,21 +182,27 @@ public function store(Request $request)
 
     // AES Encryption for ID card
     $IDAESstart = microtime(true);
-    $imageBase64 = openssl_encrypt($imageBase64, $cipher, $aeskey, $options, $iv);
+    $imageBase64AES = openssl_encrypt($imageBase64, $cipher, $aeskey, $options, $iv);
     $IDAESend = microtime(true);
     $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000;
     echo "Time taken to encrypt ID with AES-128-ECB: " . $IDAEStime_taken . " ms";
 
     // RC4 Encryption for ID card
+    // $IDRC4start = microtime(true);
+    // $imageBase64rc4 = openssl_encrypt($imageBase64, $rc4, $rc4key);
+    // $IDRC4end = microtime(true);
+    // $IDRC4time_taken = ($IDRC4end - $IDRC4start) * 1000;
+    // echo "Time taken to encrypt ID with RC4: " . $IDRC4time_taken . " ms";
+
     $IDRC4start = microtime(true);
-    $imageBase64rc4 = openssl_encrypt($imageBase64, $rc4, $rc4key);
+    $imageBase64RC4 = rc4($rc4key, $imageBase64);
     $IDRC4end = microtime(true);
     $IDRC4time_taken = ($IDRC4end - $IDRC4start) * 1000;
-    echo "Time taken to encrypt ID with RC4: " . $IDRC4time_taken . " ms";;
+    echo "Time taken to encrypt ID with RC4: " . $IDRC4time_taken . " ms";
 
     // DES Encryption for ID Card
     $IDDESstart = microtime(true);
-    $imageBase64des = openssl_encrypt($imageBase64, $des, $deskey);
+    $imageBase64DES = openssl_encrypt($imageBase64, $des, $deskey);
     $IDDESend = microtime(true);
     $IDDEStime_taken = ($IDDESend - $IDDESstart) * 1000;
     echo "Time taken to encrypt ID with DES-ECB: " . $IDDEStime_taken . " ms";
@@ -180,7 +212,7 @@ public function store(Request $request)
         'username' => $username,
         'email' => $email,
         'password' => bcrypt($request->password),
-        'image' => $imageBase64,
+        'image' => $imageBase64AES,
         'key' => $aeskey
     ]);
     // return redirect('/login')->with('success', 'Registration Success!');
