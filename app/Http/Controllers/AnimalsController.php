@@ -6,6 +6,12 @@ use App\Models\Animals;
 use Illuminate\Http\Request;
 use \App\Models\Centers;
 use Illuminate\Support\Facades\Crypt;
+use Encryption\Encryption;
+use Encryption\Exception\EncryptionException;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\File;
 
 class AnimalsController extends Controller
 {
@@ -39,7 +45,7 @@ class AnimalsController extends Controller
             if ($imageData === false) {
                 throw new Exception("Failed to read the image file.");
             }
-
+            
             $base64Encoded = base64_encode($imageData);
             return $base64Encoded;
         } catch (Exception $e) {
@@ -47,58 +53,14 @@ class AnimalsController extends Controller
             return null;
         }
     }
-
+    
     public function create()
     {
         $centers = Centers::all();
         return view('animals.create', compact('centers'));
     }
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required',
-    //         'breed' => 'required',
-    //         'age' => 'required|numeric',
-    //         'center_id' => 'required',
-    //         'desc' => 'required|max:2048',
-    //         'image' => 'image|file|max:2048'
-    //     ], [
-    //         'name.required' => 'Name can\'t be empty!',
-    //         'breed.required' => 'Breed can\'t be empty!',
-    //         'age.required' => 'Age can\'t be empty!',
-    //         'center_id' => 'Please choose your center',
-    //         'desc.required' => 'Description can\'t be empty!'
-    //     ]);
-
-    //     $image = $request->file('image');
-    //     $imageBase64 = base64_encode(file_get_contents($image));
-
-    //     // Name encryption code using DES-CBC
-    //     $name = $request->input('name');
-    //     $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
-    //     $nameIv = 'IJKLMNOP'; // Use a valid IV
-
-    //     $encryptedData = openssl_encrypt($name, 'des-cbc', $nameEncryptionKey, 0, $nameIv);
-    //     $encryptedName = base64_encode($nameIv . $encryptedData);
-
-    //     // Store data in the 'animals' table
-    //     Animals::create([
-    //         'name' => $encryptedName,
-    //         'center_id' => $request->center_id,
-    //         'breed' => $request->breed,
-    //         'age' => $request->age,
-    //         'desc' => $request->desc,
-    //         'image' => $imageBase64
-    //     ]);
-
-    //     return redirect('/animals')->with('success', 'Successfully added!');
-    // }
     
-
-
-
-
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -112,79 +74,68 @@ class AnimalsController extends Controller
             'name.required' => 'Name can\'t be empty!',
             'breed.required' => 'Breed can\'t be empty!',
             'age.required' => 'Age can\'t be empty!',
-            'center_id' => 'Please choose your center',
+            'center_id.required' => 'Please choose your center',
             'desc.required' => 'Description can\'t be empty!'
         ]);
 
-
         $image = $request->file('image');
         $imageBase64 = base64_encode(file_get_contents($image));
 
-        // Name encryption code using DES-CBC
         $name = $request->input('name');
-        $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
-        $nameIv = 'IJKLMNOP'; // Use a valid IV
-
-
-        $image = $request->file('image');
-        $imageBase64 = base64_encode(file_get_contents($image));
-
-        // Name encryption code
-        $name = $request->input('name');
-        $nameEncryptionKey = 'encryptkeyname'; // Replace with a suitable key
-        $nameIv = 'IJKLMNOP'; // Use a valid IV
-
-        $encryptedName = Crypt::encryptString($name, false, $nameEncryptionKey, $nameIv);
+        $keyName = base64_decode("RRZy0njZDzw");
+        $cipherName = 'DES-CBC';
+    
+        // Generate a random IV for each entry
+        $ivName = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cipherName));
+    
+        // Encrypt the name
+        $encryptedName = openssl_encrypt($name, $cipherName, $keyName, 0, $ivName);
+    
+        // Concatenate IV with the encrypted name
+        $encodedName = base64_encode($ivName . $encryptedName);
 
         // Store data in the 'animals' table
         Animals::create([
-            'name' => $encryptedName,
+            'name' => base64_encode($encodedName), // Store IV with the encrypted name
             'center_id' => $request->center_id,
             'breed' => $request->breed,
             'age' => $request->age,
             'desc' => $request->desc,
-            'image' => $imageBase64
+            'image' => $imageBase64,
         ]);
 
         return redirect('/animals')->with('success', 'Successfully added!');
     }
-    
-
-
 
     public function show($id)
     {
         $animal = Animals::findOrFail($id);
 
-        // Decrypt the name using DES-CBC
-        $nameEncryptionKey = 'encryptkeyname'; // Use the same key as in the store method
-        $nameIv = 'IJKLMNOP'; // Use the same IV as in the store method
+        // Ensure the encryption settings match the ones used in the store method
+        $nameEncryptionKey = base64_decode("RRZy0njZDzw="); // Use the same key as in the store method
 
-        $decryptedName = Crypt::decryptString($animal->name, false, $nameEncryptionKey, $nameIv);
+        // Get the IV and encrypted data from the 'name' field
+        $nameParts = explode(':', $animal->name);
 
-        $animal->name = $decryptedName;
+        if (count($nameParts) === 2) {
+            $iv = base64_decode($nameParts[0]);
+            $encryptedData = base64_decode($nameParts[1]);
+
+            // Decrypt the name using the key and IV
+            $decryptedName = openssl_decrypt($encryptedData, 'DES-CBC', $nameEncryptionKey, 0, $iv);
+
+            // Replace the encrypted name with the decrypted name in the $animal object
+            $animal->name = $decryptedName;
+        } else {
+            // Handle the case where the 'name' field is not in the expected format
+            // You can add error handling or a default behavior here
+        }
 
         return view('animals.show', compact('animal'));
-
     }
-    // public function show($id)
-    // {
-    //     $animal = Animals::findOrFail($id);
 
-    //     // Decrypt the name using DES-CBC
-    //     $nameEncryptionKey = 'encryptkeyname'; // Use the same key as in the store method
-    //     $nameIv = 'IJKLMNOP'; // Use the same IV as in the store method
 
-    //     $encryptedData = base64_decode($animal->name);
-    //     $iv = substr($encryptedData, 0, 8);
-    //     $data = substr($encryptedData, 8);
 
-    //     $decryptedName = openssl_decrypt($data, 'des-cbc', $nameEncryptionKey, 0, $iv);
-
-    //     $animal->name = $decryptedName;
-
-    //     return view('animals.show', compact('animal'));
-    // }
 
     public function edit($id)
     {
@@ -211,7 +162,7 @@ class AnimalsController extends Controller
         ]);
 
         $animals = Animals::findorfail($id);
-
+        
         $animals_data = [
             'name' => $request->name,
             'center_id' => $request->center_id,
