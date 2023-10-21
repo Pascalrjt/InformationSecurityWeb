@@ -72,14 +72,21 @@ Database:<br>
 
 ## Analysis on Encryption Time
 
+![encryptiontime](https://media.discordapp.net/attachments/1160530410460151899/1165261958078021663/image.png?ex=654635c4&is=6533c0c4&hm=6868822828e6ca6a5ac4d524f6f25c63f511a75be4ea384e788ae5f253a6121a&=)
+
 - In our encryption, it turns out that RC4 has the slowest encryption time. This occurs because PHP doesn't directly support this encryption algorithm. Because of this, we have to manually make this encryption type ourself. This is why RC4 has the slowest time in our website.
+
+## Analysis on Encryption Size
+![encryption size](https://cdn.discordapp.com/attachments/1160530410460151899/1165262008405458955/image.png?ex=654635d0&is=6533c0d0&hm=cff9dedeebc9a199aa56c2320ca049974d893d8583648ac828d92b6fd458fb9e&)
+
+- We also have measured the size of the encrypted images, in this case, the image encrypted with `RC4` has the largest size with an average size of `376056 bytes` followed by `AES` with an an average size `250717.3333 bytes` and then there is `DES` with an average size of `188043 bytes`
 
 ## Viewing user profile / data
 - After the user logs-in, they are able to view their data by going to the `profile` menu.
 - Once they click it, the website will redirect them to their profile where it will pull their data from the database and decrypt it using `openssl_decrypt` with the same `cipher` and `key` as it was encrypted. Their `ID card` image remains in base64 after the decryption as html supports displaying base64 images.
 
 User profile web page:<br>
-![UserProfile](https://media.discordapp.net/attachments/1160530410460151899/1163428968741994607/image.png?ex=653f8aa9&is=652d15a9&hm=9513074701059ab063c89cbe788b66e094c625a6c0f76c8f1e36995bdbfd7c0f&=&width=1297&height=671)
+![UserProfile](https://media.discordapp.net/attachments/1160530410460151899/1165257792924426340/image.png?ex=654631e3&is=6533bce3&hm=0df70f85d8ac0c12142a330d1e17817a7a44094852186d2065d46e60e62bad36&=&width=1342&height=671)
 
 DES-ECB Encryption: <br>
 ```php
