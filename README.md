@@ -72,6 +72,8 @@ Database:<br>
 
 ## Analysis on Encryption Time
 
+- In our encryption, it turns out that RC4 has the slowest encryption time. This occurs because PHP doesn't directly support this encryption algorithm. Because of this, we have to manually make this encryption type ourself. This is why RC4 has the slowest time in our website.
+
 ## Viewing user profile / data
 - After the user logs-in, they are able to view their data by going to the `profile` menu.
 - Once they click it, the website will redirect them to their profile where it will pull their data from the database and decrypt it using `openssl_decrypt` with the same `cipher` and `key` as it was encrypted. Their `ID card` image remains in base64 after the decryption as html supports displaying base64 images.
