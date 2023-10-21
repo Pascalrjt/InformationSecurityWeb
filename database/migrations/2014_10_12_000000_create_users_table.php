@@ -17,15 +17,19 @@ return new class extends Migration
             $table->string('username');
             $table->string('email')->unique();
             $table->string('password');
-            $table->text('image');
-            $table->string('key');
+            // $table->text('imageAE');
+            // $table->string('key');
+            $table->longText('imageBase64AES')->nullable();
+            $table->longText('imageBase64RC4')->nullable();
+            $table->string('keyAES')->nullable();
+            $table->string('keyRC4')->nullable();
             $table->boolean('is_admin')->default(1);
             $table->rememberToken();
             $table->timestamps();
         });
 
         // Change the 'idcard' column data type to LONGTEXT using a raw SQL statement
-        DB::statement('ALTER TABLE users MODIFY image LONGTEXT');
+        // DB::statement('ALTER TABLE users MODIFY image LONGTEXT');
     }
 
     /**

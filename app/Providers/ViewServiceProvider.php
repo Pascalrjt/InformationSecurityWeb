@@ -17,7 +17,7 @@ class ViewServiceProvider extends ServiceProvider
                 $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
 
                 $username = Auth::user()->name;
-                $username = openssl_decrypt($username, $cipher, Auth::user()->key, $options, $iv);
+                $username = openssl_decrypt($username, $cipher, Auth::user()->keyAES, $options, $iv);
                 // $username = openssl_decrypt($username, $cipher, $secret);
                 $view->with('username', $username);
             }

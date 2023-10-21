@@ -23,8 +23,10 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        'image',
-        'key'
+        'imageBase64AES',
+        'imageBase64RC4',
+        'keyAES',
+        'keyRC4'
     ];
 
     /**

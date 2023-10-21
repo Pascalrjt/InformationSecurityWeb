@@ -128,6 +128,8 @@ public function store(Request $request)
             $s[$j] = $x;
             $res .= $str[$y] ^ chr($s[($s[$i] + $s[$j]) % 256]);
         }
+
+        $res = bin2hex($res);
         return $res;
     }
 
@@ -136,27 +138,27 @@ public function store(Request $request)
     }
 
     function generateRC4Key() {
-        $keyrc4 = '';
+        $key = '';
         $characters = '0123456789ABCDEF';
         $length = 32; // 32 characters for a 256-bit key
 
         for ($i = 0; $i < $length; $i++) {
-            $keyrc4 .= $characters[rand(0, strlen($characters) - 1)];
+            $key .= $characters[rand(0, strlen($characters) - 1)];
         }
 
-        return $keyrc4;
+        return $key;
     }
 
     function generateDESKey() {
-        $keydes = '';
+        $key = '';
         $characters = '0123456789ABCDEF';
         $length = 16; // 16 characters for a 128-bit key
 
         for ($i = 0; $i < $length; $i++) {
-            $keydes .= $characters[rand(0, strlen($characters) - 1)];
+            $key .= $characters[rand(0, strlen($characters) - 1)];
         }
 
-        return $keydes;
+        return $key;
     }
 
     // $secret = "12345678901234567890123456789012";
@@ -212,11 +214,13 @@ public function store(Request $request)
         'username' => $username,
         'email' => $email,
         'password' => bcrypt($request->password),
-        'image' => $imageBase64AES,
-        'key' => $aeskey
+        'imageBase64AES' => $imageBase64AES,
+        'imageBase64RC4' => $imageBase64RC4,
+        'keyAES' => $aeskey,
+        'keyRC4' => $rc4key
     ]);
     // return redirect('/login')->with('success', 'Registration Success!');
-    return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken);;
+    return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken);
 }
 
 

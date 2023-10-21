@@ -5,11 +5,40 @@
     $cipher = "AES-256-CBC";
     $options = 0;
     $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
-    $decryptedImage = openssl_decrypt(Auth::user()->image, $cipher, Auth::user()->key, $options, $iv);
-    $decryptedEmail = openssl_decrypt(Auth::user()->email, $cipher, Auth::user()->key, $options, $iv);
-    // $decryptedImage = openssl_decrypt(Auth::user()->image, $cipher, $secret);
+
+    function rc4Decrypt($key, $encryptedStr) {
+                    $encryptedStr = hex2bin($encryptedStr);
+                    $s = array();
+                    for ($i = 0; $i < 256; $i++) {
+                        $s[$i] = $i;
+                    }
+                    $j = 0;
+                    for ($i = 0; $i < 256; $i++) {
+                        $j = ($j + $s[$i] + ord($key[$i % strlen($key)])) % 256;
+                        $x = $s[$i];
+                        $s[$i] = $s[$j];
+                        $s[$j] = $x;
+                    }
+                    $i = 0;
+                    $j = 0;
+                    $res = '';
+                    for ($y = 0; $y < strlen($encryptedStr); $y++) {
+                        $i = ($i + 1) % 256;
+                        $j = ($j + $s[$i]) % 256;
+                        $x = $s[$i];
+                        $s[$i] = $s[$j];
+                        $s[$j] = $x;
+                        $res .= $encryptedStr[$y] ^ chr($s[($s[$i] + $s[$j]) % 256]);
+                    }
+                    return $res;
+                }
+
+    $decryptedImageAES = openssl_decrypt(Auth::user()->imageBase64AES, $cipher, Auth::user()->keyAES, $options, $iv);
+    $decryptedImageRC4 = rc4Decrypt(Auth::user()->keyRC4, Auth::user()->imageBase64RC4);
+    $decryptedEmail = openssl_decrypt(Auth::user()->email, $cipher, Auth::user()->keyAES, $options, $iv);
+    // $decryptedImageAES = openssl_decrypt(Auth::user()->image, $cipher, $secret);
 @endphp
-<!-- <img src="data:image/png;base64,{{ $decryptedImage }}" alt="User Image"  style="width: 100%; height: 100%; object-fit: cover;"> -->
+
 
 <style>
     .profile {
@@ -24,9 +53,12 @@
         <div>
             <h2>ID Image</h2>
             <div>
-                <!-- <img src="data:image/png;base64,{{ Auth::user()->image }}" alt="User Image"  style="width: 100%; height: 100%; object-fit: cover;"> -->
-                {{-- <img src="data:image/png;base64,{{ $decryptedImage }}" alt="User Image"  style="width: 100%; height: 100%; object-fit: cover;"> --}}
-                <img src="data:image/png;base64,{{ $decryptedImage }}" alt="User Image" style="width: 30%; height: 30%; object-fit: cover;">
+                <img src="data:image/png;base64,{{ $decryptedImageAES }}" alt="User Image" style="width: 30%; height: 30%; object-fit: cover;">
+                <p>Size: {{ strlen(Auth::user()->imageBase64AES) }} bytes</p>
+            </div>
+            <div>
+                <img src="data:image/png;base64,{{ $decryptedImageRC4 }}" alt="User Image RC4" style="width: 30%; height: 30%; object-fit: cover;">
+                <p>Size: {{ strlen(Auth::user()->imageBase64RC4) }} bytes</p>
             </div>
         </div>
         <div class="profile">
