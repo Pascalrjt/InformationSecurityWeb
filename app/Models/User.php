@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'imageBase64AES',
         'imageBase64RC4',
+        'imageBase64Des',
         'keyAES',
         'keyRC4'
     ];

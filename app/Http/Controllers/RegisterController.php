@@ -65,7 +65,7 @@ class RegisterController extends Controller
 //     }
 //     //$imageBase64 = base64_encode(file_get_contents($image));
 
-//     $cipher = "AES-128-ECB";
+//     $aes = "AES-128-ECB";
 //     $secret = "fadhlanganteng12";
 
 //     $validatedData['password'] = bcrypt($validatedData['password']);
@@ -73,7 +73,7 @@ class RegisterController extends Controller
 //     // Encrypt the data before storing
 //     foreach ($validatedData as $key => $value) {
 //         if ($key != 'password' && $key != 'email' && $key != 'image') { // We don't need to encrypt the password as it's already hashed
-//             $validatedData[$key] = openssl_encrypt($value, $cipher, $secret);
+//             $validatedData[$key] = openssl_encrypt($value, $aes, $secret);
 //         }
 //     }
 
@@ -101,9 +101,9 @@ public function store(Request $request)
     }
 
     //Ciphers
-    $cipher = "AES-256-CBC";
+    $aes = "AES-256-CBC";
     // $rc4 = "rc4";
-    $des = "DES-ECB";
+    $des = 'DES-CBC';
 
     function rc4($key, $str) {
         $s = array();
@@ -173,18 +173,18 @@ public function store(Request $request)
 
     //Iv
     $options = 0;
-    $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
+    $iv = str_repeat("0", openssl_cipher_iv_length($aes));
 
     //User profile encryption
-    $name = openssl_encrypt($request->name, $cipher, $aeskey, $options, $iv);
-    // $username = openssl_encrypt($request->username, $cipher, $aeskey, $options, $iv);
-    $email = openssl_encrypt($request->email, $cipher, $aeskey, $options, $iv);
+    $name = openssl_encrypt($request->name, $aes, $aeskey, $options, $iv);
+    // $username = openssl_encrypt($request->username, $aes, $aeskey, $options, $iv);
+    $email = openssl_encrypt($request->email, $aes, $aeskey, $options, $iv);
     $username = $request->username;
 
 
     // AES Encryption for ID card
     $IDAESstart = microtime(true);
-    $imageBase64AES = openssl_encrypt($imageBase64, $cipher, $aeskey, $options, $iv);
+    $imageBase64AES = openssl_encrypt($imageBase64, $aes, $aeskey, $options, $iv);
     $IDAESend = microtime(true);
     $IDAEStime_taken = ($IDAESend - $IDAESstart) * 1000;
     echo "Time taken to encrypt ID with AES-128-ECB: " . $IDAEStime_taken . " ms";
@@ -204,7 +204,7 @@ public function store(Request $request)
 
     // DES Encryption for ID Card
     $IDDESstart = microtime(true);
-    $imageBase64DES = openssl_encrypt($imageBase64, $des, $deskey);
+    $imageBase64DES = openssl_encrypt($imageBase64, $des, $deskey, 0, $iv);
     $IDDESend = microtime(true);
     $IDDEStime_taken = ($IDDESend - $IDDESstart) * 1000;
     echo "Time taken to encrypt ID with DES-ECB: " . $IDDEStime_taken . " ms";
@@ -216,11 +216,13 @@ public function store(Request $request)
         'password' => bcrypt($request->password),
         'imageBase64AES' => $imageBase64AES,
         'imageBase64RC4' => $imageBase64RC4,
+        'imageBase64DES' => $imageBase64DES,
         'keyAES' => $aeskey,
-        'keyRC4' => $rc4key
+        'keyRC4' => $rc4key,
+        'keyDES' => $deskey
     ]);
     // return redirect('/login')->with('success', 'Registration Success!');
-    return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken);
+    return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken)->with('desdecrypt', $imageBase64DES);
 }
 
 
