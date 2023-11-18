@@ -21,10 +21,8 @@ return new class extends Migration
             // $table->string('key');
             $table->longText('imageBase64AES')->nullable();
             $table->longText('imageBase64RC4')->nullable();
-            $table->longText('imageBase64DES')->nullable();
             $table->string('keyAES')->nullable();
             $table->string('keyRC4')->nullable();
-            $table->string('keyDES')->nullable();
             $table->boolean('is_admin')->default(1);
             $table->rememberToken();
             $table->timestamps();

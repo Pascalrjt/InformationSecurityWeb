@@ -216,13 +216,11 @@ public function store(Request $request)
         'password' => bcrypt($request->password),
         'imageBase64AES' => $imageBase64AES,
         'imageBase64RC4' => $imageBase64RC4,
-        'imageBase64DES' => $imageBase64DES,
         'keyAES' => $aeskey,
-        'keyRC4' => $rc4key,
-        'keyDES' => $deskey
+        'keyRC4' => $rc4key
     ]);
     // return redirect('/login')->with('success', 'Registration Success!');
-    return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('id_des_time_taken', $IDDEStime_taken)->with('desdecrypt', $imageBase64DES);
+    return redirect('/login')->with('success', 'Registration Success!')->with('id_aes_time_taken', $IDAEStime_taken)->with('id_rc4_time_taken', $IDRC4time_taken)->with('desdecrypt', $imageBase64DES);
 }
 
 

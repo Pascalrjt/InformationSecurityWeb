@@ -35,7 +35,6 @@
           {{ session('success') }} <br>
           ID encrypted in: {{ session('id_aes_time_taken') }} ms (AES)<br>
           ID encrypted in: {{ session('id_rc4_time_taken') }} ms (RC4) <br>
-          ID encrypted in: {{ session('id_des_time_taken') }} ms (DES) <br>
         </div>
       @endif
       @if (session()->has('fail'))
