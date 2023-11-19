@@ -45,7 +45,7 @@ class AnimalsController extends Controller
             if ($imageData === false) {
                 throw new Exception("Failed to read the image file.");
             }
-            
+
             $base64Encoded = base64_encode($imageData);
             return $base64Encoded;
         } catch (Exception $e) {
@@ -53,14 +53,14 @@ class AnimalsController extends Controller
             return null;
         }
     }
-    
+
     public function create()
     {
         $centers = Centers::all();
         return view('animals.create', compact('centers'));
     }
-    
-    
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -84,13 +84,13 @@ class AnimalsController extends Controller
         $name = $request->input('name');
         $keyName = base64_decode("RRZy0njZDzw");
         $cipherName = 'DES-CBC';
-    
+
         // Generate a random IV for each entry
         $ivName = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cipherName));
-    
+
         // Encrypt the name
         $encryptedName = openssl_encrypt($name, $cipherName, $keyName, 0, $ivName);
-    
+
         // Concatenate IV with the encrypted name
         $encodedName = base64_encode($ivName . $encryptedName);
 
@@ -143,7 +143,7 @@ class AnimalsController extends Controller
         $centers = Centers::all();
         return view('animals.edit', compact('animals', 'centers'));
     }
-    
+
 
 
     public function update(Request $request, $id)
@@ -162,7 +162,7 @@ class AnimalsController extends Controller
         ]);
 
         $animals = Animals::findorfail($id);
-        
+
         $animals_data = [
             'name' => $request->name,
             'center_id' => $request->center_id,

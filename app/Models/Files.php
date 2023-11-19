@@ -11,6 +11,7 @@ class Files extends Model {
     protected $fillable = [
         'filename',
         'extension',
-        'file_base64'
+        'file_base64',
+        'fileOwner'
     ];
 }

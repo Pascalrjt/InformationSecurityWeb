@@ -54,11 +54,11 @@
             <h2>ID Image</h2>
             <div>
                 <div style="display: flex; justify-content: space-between;">
-                    <div style="flex-basis: 30%;">
+                    <div style="flex-basis: 40%;">
                         <img src="data:image/png;base64,{{ $decryptedImageAES }}" alt="User Image" style="width: 100%; height: 100%; object-fit: cover;">
                         <p>(AES) Size: {{ strlen(Auth::user()->imageBase64AES) }} bytes</p>
                     </div>
-                    <div style="flex-basis: 30%;">
+                    <div style="flex-basis: 40%;">
                         <img src="data:image/png;base64,{{ $decryptedImageRC4 }}" alt="User Image RC4" style="width: 100%; height: 100%; object-fit: cover;">
                         <p>(RC4)Size: {{ strlen(Auth::user()->imageBase64RC4) }} bytes</p>
                     </div>

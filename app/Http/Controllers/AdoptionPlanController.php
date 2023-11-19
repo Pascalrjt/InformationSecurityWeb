@@ -49,7 +49,7 @@ class AdoptionPlanController extends Controller
      */
     public function show(AdoptionPlan $adoptionPlan)
     {
-        
+
     }
 
     /**

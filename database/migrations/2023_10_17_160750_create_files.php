@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('filename');
             $table->string('extension');
             $table->text('file_base64');
+            $table->unsignedBigInteger('fileOwner');
+            $table->foreign('fileOwner')->references('id')->on('users');
             $table->timestamps();
 
         });

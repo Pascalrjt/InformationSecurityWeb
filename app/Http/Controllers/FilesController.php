@@ -40,6 +40,7 @@ class filesController extends Controller {
         $fileName = $fileUpload->getClientOriginalName();
         $fileNameParts = explode('.', $fileName);
         $fileExtension = end($fileNameParts);
+        $userId = $request->user()->id;
 
         // Ciphers
         $cipher = "AES-256-CBC";
@@ -57,7 +58,8 @@ class filesController extends Controller {
         Files::create([
             'filename' => $fileName,
             'extension' => $fileExtension,
-            'file_base64' => $AESBase64
+            'file_base64' => $AESBase64,
+            'fileOwner' => $userId
         ]);
 
         return redirect('/files')->with('success', 'File Uploaded!');
