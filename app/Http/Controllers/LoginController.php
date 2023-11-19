@@ -44,7 +44,7 @@ class LoginController extends Controller
             return redirect()->intended('/');
         }
 
-        return back()->with('fail', 'Login failed. make sure you have the correct email and/or password!');
+        return back()->with('fail', 'Login failed. make sure you have the correct username and/or password!');
     }
 
     // public function authenticate(Request $request)
