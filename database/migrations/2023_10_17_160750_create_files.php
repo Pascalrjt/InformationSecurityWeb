@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('file_base64');
             $table->unsignedBigInteger('fileOwner');
             $table->foreign('fileOwner')->references('id')->on('users');
+            $table->text('secret');
             $table->timestamps();
 
         });

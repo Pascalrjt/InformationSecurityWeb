@@ -46,20 +46,26 @@ class filesController extends Controller {
         $cipher = "AES-256-CBC";
 
         // Key
-        $secret = "12345678901234567890123456789012";
+        function generateAESKey(){
+            return bin2hex(openssl_random_pseudo_bytes(16));
+        }
+
+        $aeskey = generateAESKey();
+        // $secret = "12345678901234567890123456789012";
 
         //Iv
         $options = 0;
         $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
 
         // $AESBase64 = openssl_encrypt($request->file, $cipher, $secret, $options, $iv);
-        $AESBase64 = openssl_encrypt($fileBase64, $cipher, $secret, $options, $iv);
+        $AESBase64 = openssl_encrypt($fileBase64, $cipher, $aeskey, $options, $iv);
 
         Files::create([
             'filename' => $fileName,
             'extension' => $fileExtension,
             'file_base64' => $AESBase64,
-            'fileOwner' => $userId
+            'fileOwner' => $userId,
+            'secret' => $aeskey,
         ]);
 
         return redirect('/files')->with('success', 'File Uploaded!');
