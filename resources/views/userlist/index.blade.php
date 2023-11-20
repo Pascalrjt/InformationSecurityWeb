@@ -28,7 +28,11 @@
                         ?>
                         <img src="data:image/png;base64,{{ $decryptedImageAES }}" alt="User Image" style="width: 100%; height: 100%; object-fit: cover;">
                         <h5 class="mb-0 user-name">{{$decryptedName}}</h5>
-                        <button class="btn btn-primary mt-2">Request Files</button>
+                        {{-- <button class="btn btn-primary mt-2">Request Files</button> --}}
+                        <form method="POST" action="{{ route('filerequest.store', ['userId' => $user->id]) }}">
+                            @csrf
+                            <button type="submit" class="btn btn-primary mt-2">Request Files</button>
+                        </form>
                     </div>
             </div>
         @endforeach

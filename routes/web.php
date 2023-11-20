@@ -10,6 +10,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AdoptionPlanController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RequestFileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -65,3 +66,4 @@ Route::get('/files', [FilesController::class, 'index'])->name('files.index');
 Route::post('/files', [FilesController::class, 'store'])->name('files.store');
 
 Route::get('/users', [UserController::class, 'index'])->name('user.index');
+Route::post('/users', [RequestFileController::class, 'store'])->middleware('auth')->name('filerequest.store');
