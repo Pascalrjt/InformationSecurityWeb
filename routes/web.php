@@ -67,3 +67,7 @@ Route::post('/files', [FilesController::class, 'store'])->name('files.store');
 
 Route::get('/users', [UserController::class, 'index'])->name('user.index');
 Route::post('/users', [FileRequestController::class, 'store'])->middleware('auth')->name('filerequest.store');
+
+Route::get('/request', function () {
+    return view('request');
+})->middleware('auth')->name('request');

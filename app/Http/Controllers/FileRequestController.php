@@ -29,5 +29,16 @@ class FileRequestController extends Controller
         return redirect('/users')->with('error', 'File request already exists!');
     }
 }
+    public function showRequestPage(Request $request, $requestedUserId)
+    {
+        // Fetch details of the user whose file is requested
+        $requestedUser = User::find($requestedUserId);
+
+        // Fetch file requests made to the requested user
+        $fileRequests = FileRequest::where('requested_id', $requestedUserId)->get();
+
+        // Pass the $requestedUser and $fileRequests data to the view
+        return view('request', compact('requestedUser', 'fileRequests'));
+    }
 
 }

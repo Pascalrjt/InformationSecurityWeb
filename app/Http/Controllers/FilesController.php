@@ -101,4 +101,28 @@ class filesController extends Controller {
 
         return Redirect::to('/files')->with(['response' => $response]);
     }
+    public function showRequestForm($fileId) {
+        $requestedFile = Files::findOrFail($fileId); // Fetch the requested file
+        $requester = auth()->user(); // Fetch the user requesting the file (User 1)
+    
+        // Store the file request in the database
+        FileRequest::create([
+            'requested_id' => $requestedFile->fileOwner, // User 2, the owner of the file
+            'requester_id' => $requester->id, // User 1, the requester
+            'has_access' => false, // Assuming the request initially hasn't been approved
+        ]);
+    
+        return view('request', [
+            'requestedFile' => $requestedFile,
+            'requester' => $requester,
+        ]);
+    }
+    public function showRequestPage(Request $request, $requestedUserId)
+    {
+        // Fetch details of the user whose file is requested
+        $requestedUser = User::find($requestedUserId);
+
+        // Pass the $requestedUser data to the view
+        return view('request', compact('requestedUser'));
+    }
 }
