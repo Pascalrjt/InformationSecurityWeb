@@ -13,6 +13,7 @@ class Files extends Model {
         'extension',
         'file_base64',
         'fileOwner',
-        'secret'
+        'secret',
+        'iv',
     ];
 }

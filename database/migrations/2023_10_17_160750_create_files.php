@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('fileOwner');
             $table->foreign('fileOwner')->references('id')->on('users');
             $table->text('secret');
+            $table->text('iv');
             $table->timestamps();
 
         });

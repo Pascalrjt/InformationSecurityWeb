@@ -66,9 +66,39 @@ class filesController extends Controller {
             'file_base64' => $AESBase64,
             'fileOwner' => $userId,
             'secret' => $aeskey,
+            'iv' => $iv,
         ]);
 
         return redirect('/files')->with('success', 'File Uploaded!');
     }
 
+    public function download(Request $request) {
+        $file = Files::find($request->id);
+
+        // Le file
+        $file = ($request->file_base64);
+
+        // Ciphers
+        $cipher = "AES-256-CBC";
+        $aeskey = ($request->secret);
+
+        //Iv
+        $options = 0;
+        $iv = ($request->iv);
+
+        $decrypted_AESBase64 = openssl_decrypt($file->file_base64, $cipher, $aeskey, $options, $iv);
+
+        $fileContent = base64_decode($decrypted_AESBase64);
+
+        // File download header
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename=' . $file->filename,
+        ];
+
+        // Download response / popup
+        $response = Response::make($fileContent, 200, $headers);
+
+        return Redirect::to('/files')->with(['response' => $response]);
+    }
 }
