@@ -10,29 +10,24 @@ use App\Models\FileRequest;
 class FileRequestController extends Controller
 {
     public function store(Request $request, User $requested)
-    {
-        $user = Auth::user(); // Get the currently logged-in user
+{
+    $user = Auth::user();
 
+    $existingRequest = FileRequest::where('requested_id', $request->input('requested_id'))
+        ->where('requester_id', $user->id)
+        ->first();
+
+    if (!$existingRequest) {
         $filerequest = FileRequest::create([
             'requested_id' => $request->input('requested_id'),
             'requester_id' => $user->id,
             'has_access' => false,
-
         ]);
-        return redirect('/users')->with('success', 'Successfuly requested files!');
+
+        return redirect('/users')->with('success', 'Successfully requested files!');
+    } else {
+        return redirect('/users')->with('error', 'File request already exists!');
     }
+}
 
-    // public function store(Request $request, Animals $animals)
-    // {
-    //     $user = Auth::user(); // Get the currently logged-in user
-
-    //     $adoptionPlan = AdoptionPlan::create([
-    //         'animal_id' => $animals->id,
-    //         'user_id' => $user->id,
-    //         'adopter_name' => $user->name,
-    //         'adopter_email' => $user->email,
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Adoption plan created successfully.');
-    // }
 }

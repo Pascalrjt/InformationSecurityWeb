@@ -11,9 +11,21 @@
         font-size: 20px; /* Adjust this value to your liking */
         z-index: 9999;
     }
+
+    .alert {
+        text-align: center;
+        width: 25%; /* Adjust this value to your liking */
+        margin: 0 auto;
+    }
     </style>
 
     <h1>User List</h1>
+        @if (session()->has('success'))
+            <div class="alert alert-success alert-dismissible fade show small-font" role="alert">
+            {{ session('success') }} <br>
+            </div>
+        @endif
+
     <div class="row mx-5 justify-content-center">
         @foreach ($users->where('id', '!=', Auth::id()) as $user)
             <div class="card mx-2 bg-dark text-white user-card" style="width: 400px; height: 400px;">
