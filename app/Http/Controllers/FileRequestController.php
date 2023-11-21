@@ -14,7 +14,7 @@ class FileRequestController extends Controller
         $user = Auth::user(); // Get the currently logged-in user
 
         $filerequest = FileRequest::create([
-            'requested_id' => $requested->id,
+            'requested_id' => $request->input('requested_id'),
             'requester_id' => $user->id,
             'has_access' => false,
 
