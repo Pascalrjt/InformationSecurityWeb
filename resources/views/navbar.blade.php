@@ -32,6 +32,8 @@
             </h5>
             <h5 class="mx-2">
                 <a href="/files">Files</a>
+            </h5><h5 class="mx-2">
+                <a href="/request">Request</a>
             </h5>
             @auth
             <h5><a href="{{ route('profile') }}">Profile</a></h5>
