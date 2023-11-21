@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\FileRequest;
 
-class RequestFileController extends Controller
+class FileRequestController extends Controller
 {
     public function store(Request $request, User $requested)
     {
         $user = Auth::user(); // Get the currently logged-in user
 
-        $requestFile = FileRequest::create([
+        $filerequest = FileRequest::create([
             'requested_id' => $requested->id,
             'requester_id' => $user->id,
             'has_access' => false,

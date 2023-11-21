@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('request_files', function (Blueprint $table) {
+        Schema::create('file_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('requested_id');
+            $table->foreignId('requested_id')->nullable();
             $table->foreignId('requester_id');
-            $table->boolean('has_access')->default(false); // Add the new field here
+            $table->boolean('has_access')->default(false);
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('file_request');
+        Schema::dropIfExists('file_requests');
     }
 };
