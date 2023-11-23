@@ -11,6 +11,7 @@ use App\Http\Controllers\AdoptionPlanController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FileRequestController;
+use App\Http\Controllers\InboxController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -67,3 +68,5 @@ Route::post('/files', [FilesController::class, 'store'])->name('files.store');
 
 Route::get('/users', [UserController::class, 'index'])->name('user.index');
 Route::post('/users', [FileRequestController::class, 'store'])->middleware('auth')->name('filerequest.store');
+
+Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
