@@ -1,4 +1,3 @@
-resources/views/inbox/index.blade.php
 
 @extends('master')
 @section('content')
