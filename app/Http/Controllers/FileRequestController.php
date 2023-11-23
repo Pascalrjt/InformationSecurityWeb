@@ -65,6 +65,10 @@ class FileRequestController extends Controller
         $cipher = "AES-256-CBC";
         $options = 0;
 
+        // Generating a new secret
+        $newAESkey = bin2hex(openssl_random_pseudo_bytes(16));
+        $AESkeykey = bin2hex(openssl_random_pseudo_bytes(16));
+
         // Duplicate each file and change the fileOwner to the requester_id
         foreach ($files as $file) {
             $newFile = $file->replicate();
@@ -75,17 +79,20 @@ class FileRequestController extends Controller
             $iv = $file->iv;
             // Decrypting the FileBase64
             $decryptedFileBase64 = openssl_decrypt($file->file_base64, $cipher, $file->secret, $options, $iv);
-            // Generating a new secret
-            $newAESkey = bin2hex(openssl_random_pseudo_bytes(16));
-
             // Re-encrypting the file with the new secret
             $encryptedFileBase64 = openssl_encrypt($decryptedFileBase64, $cipher,  $newAESkey, $options, $iv);
 
-            // $newdecryptedFileBase64 = openssl_decrypt($encryptedFileBase64, $cipher, $newAESkey, $options, $iv); for testing
+            $encrypedAESkey = openssl_encrypt($newAESkey, $cipher, $AESkeykey, $options, $iv);
 
             // Storing the encrpyted file and the new secret
             $newFile->file_base64 = $encryptedFileBase64;
-            $newFile->secret = $newAESkey;
+
+            // secret is holding the value of the encrypted key [Temporarily] [WIP]
+            $newFile->secret = $encrypedAESkey;
+
+            // This will be the final assigned value for secret
+            // $newFile->secret = null;
+
 
             $newFile->save();
         }
