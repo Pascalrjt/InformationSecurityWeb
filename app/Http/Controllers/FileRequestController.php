@@ -28,6 +28,16 @@ class FileRequestController extends Controller
     } else {
         return redirect('/users')->with('error', 'File request already exists!');
     }
-}
+    }
+    public function update(Request $request, FileRequest $fileRequest)
+    {
+        $fileRequest->has_access = true; 
+        $fileRequest->save();
+
+        $requester = User::find($fileRequest->requester_id);
+        $notification = "User A has accepted your request."; 
+
+        return redirect('/inbox')->with('success', 'You have accepted the file request.');
+    }
 
 }

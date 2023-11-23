@@ -24,19 +24,38 @@
     <h1>Inbox</h1>
     <div class="row mx-5 justify-content-center">
         @foreach ($file_requests as $file_request)
-            @if(Auth::id() == $file_request->requested_id)
-                <div class="card mx-2 bg-dark text-white message-card" style="width: 90%; height: 50px">
-                    <div class="message-text">
+            <div class="card mx-2 bg-dark text-white message-card" style="width: 90%; height: 50px">
+                <div class="message-text">
+                    @if($file_request->has_access)
+                        @if($file_request->requester_id === Auth::id())
+                            <p>{{ \App\Models\User::find($file_request->requested_id)->username }} has accepted your request</p>
+                        @elseif($file_request->requested_id === Auth::id())
+                            <p>You have accepted {{ \App\Models\User::find($file_request->requester_id)->username }}'s request</p>
+                        @else
+                            <p>You dont have access to this request</p>
+                        @endif
+                    @else
+                    @if($file_request->requester_id === Auth::id() || $file_request->requested_id === Auth::id())
                         <p>{{ \App\Models\User::find($file_request->requester_id)->username }} has requested access to your files</p>
-                    </div>
-                    <div class="accept-button-container">
-                        <button class="btn btn-primary accept-button">Accept request</button>
-                    </div>
+                        @if($file_request->requested_id === Auth::id())
+                            <div class="accept-button-container">
+                                <form method="POST" action="{{ route('filerequests.update', $file_request->id) }}">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-primary accept-button">Accept request</button>
+                                </form>
+                            </div>
+                    @endif
+                    @else
+                            <p>You dont have access to this request</p>
+                        @endif
+                    @endif
                 </div>
-            @endif
+            </div>
         @endforeach
     </div>
 @else
     <p>You need to be logged in to view this page. Please <a href="/login">login</a>.</p>
 @endif
+
 @endsection

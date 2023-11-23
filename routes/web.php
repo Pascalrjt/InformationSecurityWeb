@@ -70,3 +70,6 @@ Route::get('/users', [UserController::class, 'index'])->name('user.index');
 Route::post('/users', [FileRequestController::class, 'store'])->middleware('auth')->name('filerequest.store');
 
 Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
+Route::put('/filerequests/{fileRequest}', 'FileRequestController@update')->name('filerequests.update');
+Route::post('/filerequests/{requested}', [FileRequestController::class, 'store'])->name('filerequests.store');
+Route::put('/filerequests/{fileRequest}', [FileRequestController::class, 'update'])->name('filerequests.update');
