@@ -14,6 +14,7 @@ class Files extends Model {
         'file_base64',
         'fileOwner',
         'secret',
+        'isDuplicate',
         'iv',
     ];
 }

@@ -8,7 +8,7 @@
             <span class="cen">Secure Storage<br></span>
         </div>
         <br>
-        <a class="button" href="/animals">View Data</a>
+        <a class="button" href="/files">View Data</a>
     </div>
 </div>
 
