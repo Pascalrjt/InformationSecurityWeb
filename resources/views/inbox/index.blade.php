@@ -16,7 +16,7 @@
     }
 
     .message-card {
-        margin-bottom: 5%;
+        margin-bottom: 15px;
     }
 </style>
 
