@@ -31,28 +31,6 @@ class FileRequestController extends Controller
             }
     }
 
-    // public function update(Request $request, FileRequest $fileRequest)
-    // {
-    //     $fileRequest->has_access = true;
-    //     $fileRequest->save();
-
-    //     // Fetch all files owned by the requested_id
-    //     $files = Files::where('fileOwner', $fileRequest->requested_id)->get();
-
-    //     // Duplicate each file and change the fileOwner to the requester_id
-    //     foreach ($files as $file) {
-    //         $newFile = $file->replicate();
-    //         $newFile->fileOwner = $fileRequest->requester_id;
-    //         $newFile->isDuplicate = true;
-    //         $newFile->save();
-    //     }
-
-    //     $requester = User::find($fileRequest->requester_id);
-    //     $notification = "User A has accepted your request.";
-
-    //     return redirect('/inbox')->with('success', 'You have accepted the file request.');
-    // }
-
     public function update(Request $request, FileRequest $fileRequest)
     {
         $fileRequest->has_access = true;
@@ -72,31 +50,33 @@ class FileRequestController extends Controller
 
         // Duplicate each file and change the fileOwner to the requester_id
         foreach ($files as $file) {
-            $newFile = $file->replicate();
-            $newFile->fileOwner = $fileRequest->requester_id;
-            $newFile->isDuplicate = true;
+            if(!$file->isDuplicate){
+                $newFile = $file->replicate();
+                $newFile->fileOwner = $fileRequest->requester_id;
+                $newFile->isDuplicate = true;
 
-            // Fetch the iv from the file
-            $iv = $file->iv;
-            // Decrypting the FileBase64
-            $decryptedFileBase64 = openssl_decrypt($file->file_base64, $cipher, $file->secret, $options, $iv);
-            // Re-encrypting the file with the new secret
-            $encryptedFileBase64 = openssl_encrypt($decryptedFileBase64, $cipher,  $newAESkey, $options, $iv);
+                // Fetch the iv from the file
+                $iv = $file->iv;
+                // Decrypting the FileBase64
+                $decryptedFileBase64 = openssl_decrypt($file->file_base64, $cipher, $file->secret, $options, $iv);
+                // Re-encrypting the file with the new secret
+                $encryptedFileBase64 = openssl_encrypt($decryptedFileBase64, $cipher,  $newAESkey, $options, $iv);
 
-            $encrypedAESkey = openssl_encrypt($newAESkey, $cipher, $AESkeykey, $options, $iv);
-            $AESkeyMessage = openssl_encrypt($encrypedAESkey, $cipher, $AESkeykey, $options, $iv);
+                $encrypedAESkey = openssl_encrypt($newAESkey, $cipher, $AESkeykey, $options, $iv);
+                $AESkeyMessage = openssl_encrypt($encrypedAESkey, $cipher, $AESkeykey, $options, $iv);
 
-            // Storing the encrpyted file and the new secret
-            $newFile->file_base64 = $encryptedFileBase64;
+                // Storing the encrpyted file and the new secret
+                $newFile->file_base64 = $encryptedFileBase64;
 
-            // secret is holding the value of the encrypted key [Temporarily] [WIP]
-            $newFile->secret = $AESkeyMessage;
+                // secret is holding the value of the encrypted key [Temporarily] [WIP]
+                $newFile->secret = $AESkeyMessage;
 
-            // This will be the final assigned value for secret
-            // $newFile->secret = null;
+                // This will be the final assigned value for secret
+                // $newFile->secret = null;
 
 
-            $newFile->save();
+                $newFile->save();
+            }
         }
 
         $requester = User::find($fileRequest->requester_id);
