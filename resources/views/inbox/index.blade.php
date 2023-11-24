@@ -6,7 +6,7 @@
     .message-text {
         text-align: left;
         padding: 10px 20px;
-        display: flex;
+        /* display: flex; */
         align-items: center;
         justify-content: space-between;
     }
@@ -17,6 +17,9 @@
 
     .message-card {
         margin-bottom: 15px;
+        display: flex;
+        width: 95%;
+
     }
 </style>
 
@@ -24,23 +27,13 @@
     <h1>Inbox</h1>
     <div class="row mx-5 justify-content-center">
         @foreach ($file_requests as $file_request)
-            <div class="card mx-2 bg-dark text-white message-card" style="width: 90%; height: 60px">
+            <div class="card mx-2 bg-dark text-white message-card">
                 <div class="message-text">
                     @if($file_request->has_access)
                         @if($file_request->requester_id === Auth::id())
-
-                            @foreach ($files->where('fileOwner', auth()->id()) as $file)
-                                @php
-                                    $cipher = "AES-256-CBC";
-                                    $options = 0;
-                                    $iv = $file->iv;
-                                    $decryptedSecret = openssl_decrypt($file->secret, $cipher, env('AES_KEY_KEY'), $options, $file->iv);
-                                @endphp
-
-                                <p>{{ \App\Models\User::find($file_request->requested_id)->username }} has accepted your request. Here is your private key: <br> {{ $decryptedSecret }} </p>
-                                @break
-                            @endforeach
-
+                            <div>
+                                <p>{{ \App\Models\User::find($file_request->requested_id)->username }} has accepted your request. </p>
+                            </div>
                         @elseif($file_request->requested_id === Auth::id())
                             <p>You have accepted {{ \App\Models\User::find($file_request->requester_id)->username }}'s request</p>
                         @else
@@ -65,6 +58,20 @@
                 </div>
             </div>
         @endforeach
+            <div class="card mx-2 bg-dark text-white message-card">
+                <div class="message-text">
+                    <p>Private Keys:</p>
+                    @foreach ($files->where('fileOwner', auth()->id())->where('isDuplicate', true) as $file)
+                        @php
+                            $cipher = "AES-256-CBC";
+                            $options = 0;
+                            $iv = $file->iv;
+                            $decryptedSecret = openssl_decrypt($file->secret, $cipher, env('AES_KEY_KEY'), $options, $file->iv);
+                        @endphp
+                        <p>- Here is the private key for {{$file->filename}}:   {{ $decryptedSecret }}</p>
+                    @endforeach
+                </div>
+            </div>
     </div>
 @else
     <p>You need to be logged in to view this page. Please <a href="/login">login</a>.</p>
