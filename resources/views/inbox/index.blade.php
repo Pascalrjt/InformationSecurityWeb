@@ -28,7 +28,19 @@
                 <div class="message-text">
                     @if($file_request->has_access)
                         @if($file_request->requester_id === Auth::id())
-                            <p>{{ \App\Models\User::find($file_request->requested_id)->username }} has accepted your request</p>
+
+                            @foreach ($files->where('fileOwner', auth()->id()) as $file)
+                                @php
+                                    $cipher = "AES-256-CBC";
+                                    $options = 0;
+                                    $iv = $file->iv;
+                                    $decryptedSecret = openssl_decrypt($file->secret, $cipher, env('AES_KEY_KEY'), $options, $file->iv);
+                                @endphp
+
+                                <p>{{ \App\Models\User::find($file_request->requested_id)->username }} has accepted your request. Here is your private key: <br> {{ $decryptedSecret }} </p>
+                                @break
+                            @endforeach
+
                         @elseif($file_request->requested_id === Auth::id())
                             <p>You have accepted {{ \App\Models\User::find($file_request->requester_id)->username }}'s request</p>
                         @else

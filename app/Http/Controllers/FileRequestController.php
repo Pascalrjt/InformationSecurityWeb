@@ -67,7 +67,8 @@ class FileRequestController extends Controller
 
         // Generating a new secret
         $newAESkey = bin2hex(openssl_random_pseudo_bytes(16));
-        $AESkeykey = bin2hex(openssl_random_pseudo_bytes(16));
+        // $AESkeykey = bin2hex(openssl_random_pseudo_bytes(16));
+        $AESkeykey = env('AES_KEY_KEY');
 
         // Duplicate each file and change the fileOwner to the requester_id
         foreach ($files as $file) {
@@ -83,12 +84,13 @@ class FileRequestController extends Controller
             $encryptedFileBase64 = openssl_encrypt($decryptedFileBase64, $cipher,  $newAESkey, $options, $iv);
 
             $encrypedAESkey = openssl_encrypt($newAESkey, $cipher, $AESkeykey, $options, $iv);
+            $AESkeyMessage = openssl_encrypt($encrypedAESkey, $cipher, $AESkeykey, $options, $iv);
 
             // Storing the encrpyted file and the new secret
             $newFile->file_base64 = $encryptedFileBase64;
 
             // secret is holding the value of the encrypted key [Temporarily] [WIP]
-            $newFile->secret = $encrypedAESkey;
+            $newFile->secret = $AESkeyMessage;
 
             // This will be the final assigned value for secret
             // $newFile->secret = null;
@@ -102,5 +104,4 @@ class FileRequestController extends Controller
 
         return redirect('/inbox')->with('success', 'You have accepted the file request.');
     }
-
 }

@@ -66,6 +66,7 @@ Route::get('/files/create', [FilesController::class, 'upload'])->name('upload')-
 Route::get('/files', [FilesController::class, 'index'])->name('files.index');
 Route::post('/files', [FilesController::class, 'store'])->name('files.store');
 Route::get('/files/download/{id}', [FilesController::class, 'download'])->name('files.download');
+Route::post('/files/{file}/decrypt', [FilesController::class, 'decryptWithKey'])->name('files.decryptWithKey');
 
 
 Route::get('/users', [UserController::class, 'index'])->name('user.index');
@@ -75,3 +76,4 @@ Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
 Route::put('/filerequests/{fileRequest}', 'FileRequestController@update')->name('filerequests.update');
 Route::post('/filerequests/{requested}', [FileRequestController::class, 'store'])->name('filerequests.store');
 Route::put('/filerequests/{fileRequest}', [FileRequestController::class, 'update'])->name('filerequests.update');
+
