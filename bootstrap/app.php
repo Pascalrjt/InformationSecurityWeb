@@ -17,6 +17,33 @@ $app = new Illuminate\Foundation\Application(
 
 /*
 |--------------------------------------------------------------------------
+| Decrypt the Environment File
+|--------------------------------------------------------------------------
+|
+| Check if an encrypted environment file exists, decrypt it, and load the
+| decrypted content into the application.
+|
+*/
+
+$encryptedEnvFile = $app->environmentPath().'/env.encrypted';
+
+if (file_exists($encryptedEnvFile)) {
+    $decryptedEnv = file_get_contents($encryptedEnvFile);
+
+    // Use the encryption key (replace 'YOUR_ENCRYPTION_KEY' with your actual key)
+    $encryptionKey = '3f13f09c730f52646697b74aa6f7fad2';
+
+    try {
+        $decryptedEnv = openssl_decrypt($decryptedEnv, 'AES-256-CBC', $encryptionKey, 0, $encryptionKey);
+        file_put_contents($app->environmentPath().'/'.$app->environmentFile(), $decryptedEnv);
+    } catch (Throwable $e) {
+        // Handle decryption error
+        die('Error decrypting environment file.');
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Bind Important Interfaces
 |--------------------------------------------------------------------------
 |
