@@ -65,6 +65,8 @@ Route::post('/animals/{animals}', [AdoptionPlanController::class, 'store'])->mid
 Route::get('/files/create', [FilesController::class, 'upload'])->name('upload')->middleware('App\Http\Middleware\Admin');
 Route::get('/files', [FilesController::class, 'index'])->name('files.index');
 Route::post('/files', [FilesController::class, 'store'])->name('files.store');
+Route::get('/files/download/{id}', [FilesController::class, 'download'])->name('files.download');
+
 
 Route::get('/users', [UserController::class, 'index'])->name('user.index');
 Route::post('/users', [FileRequestController::class, 'store'])->middleware('auth')->name('filerequest.store');

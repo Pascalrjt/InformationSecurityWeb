@@ -10,7 +10,7 @@
                     <div class="text-center" style="width: 100%; height: 300px; margin: 10px 0; position: relative;">
                         {{-- <img src="{{ $file->url }}" alt="File Image" style="width: 100%; height: 100%; object-fit: cover;"> --}}
                         <h5 class="mb-0 file-name">{{ $file->filename }}</h5>
-                        <a href="{{ $file->download_url }}" class="btn btn-primary mt-2">Download</a>
+                        <a href="{{ route('files.download', ['id' => $file->id]) }}" class="btn btn-primary mt-2">Download</a>
                     </div>
                 </div>
             @endforeach

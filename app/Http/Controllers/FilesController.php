@@ -72,33 +72,30 @@ class filesController extends Controller {
         return redirect('/files')->with('success', 'File Uploaded!');
     }
 
-    public function download(Request $request) {
-        $file = Files::find($request->id);
+    public function download($id) {
+        $file = Files::find($id);
 
-        // Le file
-        $file = ($request->file_base64);
+        if (!$file) {
+            abort(404); // File not found
+        }
 
-        // Ciphers
+        // Fetch the encrypted file content and decrypt it
         $cipher = "AES-256-CBC";
-        $aeskey = ($request->secret);
-
-        //Iv
+        $aeskey = $file->secret;
         $options = 0;
-        $iv = ($request->iv);
+        $iv = $file->iv;
 
         $decrypted_AESBase64 = openssl_decrypt($file->file_base64, $cipher, $aeskey, $options, $iv);
-
         $fileContent = base64_decode($decrypted_AESBase64);
 
-        // File download header
+        // Set headers for file download
         $headers = [
             'Content-Type' => 'application/octet-stream',
             'Content-Disposition' => 'attachment; filename=' . $file->filename,
         ];
-
-        // Download response / popup
-        $response = Response::make($fileContent, 200, $headers);
-
-        return Redirect::to('/files')->with(['response' => $response]);
+    
+        // Return the download response
+        return response()->make($fileContent, 200, $headers);
     }
+
 }
