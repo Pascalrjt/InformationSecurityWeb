@@ -11,6 +11,13 @@
 ## Outline
 - We created a simple website that allows the user to register, login and then store their data. All these files are then encrypted before being stored.
 
+## Set Up
+- Before running program, please edit the env file and add
+```env
+AES_KEY_KEY=9328e2bce387ed16a42f46c780fe1f64
+```
+- Or you can use any key you want 
+
 ## Features:
 ## User register & login screen
 - The user is able to register themselves into the into the website providing information such as  their `name`, `username`, `email`, `password` as `ID card image`. These data will be encrypted and then stored in a database.
@@ -114,3 +121,186 @@ Animals::create([
 - encryptedName = openssl_encrypt($paddedName, 'des-ecb', $secret, OPENSSL_RAW_DATA, $iv); This is to create variable to for the encrypted name and put the value in <br>
 - Store the encrypted name in the database
 - Lastly, we put it on the table
+
+## File Downloading
+- The user is able to upload and download the files that they have uploaded
+
+![UserFiles](https://media.discordapp.net/attachments/824131614073683968/1177786096684372028/image.png?ex=6573c5c7&is=656150c7&hm=ae9c6cf5d0eafacbb7d3d5b8894c1afb6f86d291c9540be446cec677b8cebcef&=&format=webp&width=1390&height=671)
+
+```php
+public function download($id) {
+        $file = Files::find($id);
+
+        if (!$file) {
+            abort(404); // File not found
+        }
+
+        // Check if the file is a duplicate
+        if ($file->isDuplicate) {
+            // Return a view with a form to ask for the private key
+            return view('files.request_key', ['file' => $file]);
+        }
+
+        // Fetch the encrypted file content and decrypt it
+        $cipher = "AES-256-CBC";
+        $aeskey = $file->secret;
+        $options = 0;
+        $iv = $file->iv;
+
+        $decrypted_AESBase64 = openssl_decrypt($file->file_base64, $cipher, $aeskey, $options, $iv);
+        $fileContent = base64_decode($decrypted_AESBase64);
+
+        // Set headers for file download
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename=' . $file->filename,
+        ];
+
+        // Return the download response
+        return response()->make($fileContent, 200, $headers);
+    }
+```
+
+## User Page & File Sharing
+
+![UsersPage](https://cdn.discordapp.com/attachments/824131614073683968/1177777651495227502/image.png?ex=6573bdea&is=656148ea&hm=347e42a7aa0e96415006846c6396e627b255c8ed1fb132cd05bcd10688cfaaf4&)
+
+- The user is able to view other users who are registerd to the website
+- Below their profiles theres a `Request Files` button. Clicking on it will make a request towards the `requested_user` for their files. And return a response that request has been created.
+
+![FileRequest](https://cdn.discordapp.com/attachments/824131614073683968/1177781895866630215/image.png?ex=6573c1de&is=65614cde&hm=37a1130f639f9ca28d8775e510ebf9a69d6bc757064157cd462bba1fe49913e5&)
+
+- This creates a new table `file_requests` with the parameters `requester_id`, `requested_id` and `has_access` which has a default value of `false`.
+
+![FileRequestTable](https://cdn.discordapp.com/attachments/824131614073683968/1177782463246913626/image.png?ex=6573c265&is=65614d65&hm=25061f22245a31d88ba213e0e67888dad58950ed46849b51f720f9b93ccfaff7&)
+
+```php
+public function store(Request $request, User $requested)
+    {
+        $user = Auth::user();
+
+        $existingRequest = FileRequest::where('requested_id', $request->input('requested_id'))
+            ->where('requester_id', $user->id)
+            ->first();
+
+            if (!$existingRequest) {
+                $filerequest = FileRequest::create([
+                    'requested_id' => $request->input('requested_id'),
+                    'requester_id' => $user->id,
+                    'has_access' => false,
+                ]);
+
+                return redirect('/users')->with('success', 'Successfully requested files!');
+            } else {
+                return redirect('/users')->with('error', 'File request already exists!');
+            }
+    }
+```
+
+## User Inbox for File Requests & File Sharing
+
+- The user has an inbox page where the requests that they received are stored
+
+![UserInbox](https://cdn.discordapp.com/attachments/824131614073683968/1177783803880677457/image.png?ex=6573c3a5&is=65614ea5&hm=888580faaa1ca401789e9bb482a7ca6392367ae03f3b902fb7c63089e6ea2456&)
+
+- The requested user can click on the `Accept Request` button and the `file_requests` table will be updated changing the `has_access` value from `false` to `true`.
+
+![requestedInbox](https://media.discordapp.net/attachments/824131614073683968/1177783803880677457/image.png?ex=6573c3a5&is=65614ea5&hm=888580faaa1ca401789e9bb482a7ca6392367ae03f3b902fb7c63089e6ea2456&=&format=webp&width=1394&height=670)
+
+- The `requested_user`'s files will then be duplicated and modified so that their `fileOwner` is now the `requester_user`. During the duplication the files, the file will first be decrypted and then a new `key` will be generated to encrypt the duplicated `files`. Once this happens the encrypted files will then be stored and the newly generated `key` will be encrypted again by a `master key` that is stored in the `env`. The newly duplicated files will also have their `isDuplicate` value changed from false to `true`, This prevents shared files to be reshared again to other users.
+- The `requester_user` will be notified that the `requested_user` has given them access to the files via the inbox and the encrypted key `private_key` will also be sent to the inbox of the `requester_user` which will be used when downloading the `shared` `files`.
+
+![requesterFiles](https://media.discordapp.net/attachments/824131614073683968/1177786096684372028/image.png?ex=6573c5c7&is=656150c7&hm=ae9c6cf5d0eafacbb7d3d5b8894c1afb6f86d291c9540be446cec677b8cebcef&=&format=webp&width=1390&height=671)
+
+```php
+public function update(Request $request, FileRequest $fileRequest)
+    {
+        $fileRequest->has_access = true;
+        $fileRequest->save();
+
+        // Fetch all files owned by the requested_id
+        $files = Files::where('fileOwner', $fileRequest->requested_id)->get();
+
+        // Define the cipher
+        $cipher = "AES-256-CBC";
+        $options = 0;
+
+        // Generating a new secret
+        $newAESkey = bin2hex(openssl_random_pseudo_bytes(16));
+        // $AESkeykey = bin2hex(openssl_random_pseudo_bytes(16));
+        $AESkeykey = env('AES_KEY_KEY');
+
+        // Duplicate each file and change the fileOwner to the requester_id
+        foreach ($files as $file) {
+            //Checks if file is a duplicate and does not duplicate if isDuplicate value is true
+            if(!$file->isDuplicate){
+                $newFile = $file->replicate();
+                $newFile->fileOwner = $fileRequest->requester_id;
+                $newFile->isDuplicate = true;
+
+                // Fetch the iv from the file
+                $iv = $file->iv;
+                // Decrypting the FileBase64
+                $decryptedFileBase64 = openssl_decrypt($file->file_base64, $cipher, $file->secret, $options, $iv);
+                // Re-encrypting the file with the new secret
+                $encryptedFileBase64 = openssl_encrypt($decryptedFileBase64, $cipher,  $newAESkey, $options, $iv);
+
+                $encrypedAESkey = openssl_encrypt($newAESkey, $cipher, $AESkeykey, $options, $iv);
+                $AESkeyMessage = openssl_encrypt($encrypedAESkey, $cipher, $AESkeykey, $options, $iv);
+
+                // Storing the encrpyted file and the new secret
+                $newFile->file_base64 = $encryptedFileBase64;
+
+                // secret is holding the value of the encrypted encrypted key 
+                $newFile->secret = $AESkeyMessage;
+
+                $newFile->save();
+            }
+        }
+
+        $requester = User::find($fileRequest->requester_id);
+        $notification = "User A has accepted your request.";
+
+        return redirect('/inbox')->with('success', 'You have accepted the file request.');
+    }
+```
+
+## Downloading Shared Files 
+
+- The `requester_user` is able to download the files that have been shared to him by clicking the `download` button
+- If the file is a `shared file` it will promt the user to enter the `private key` that was generated when the file was shared.  
+- After the `private key` is entered the key will be decrypted with the `master key` stored in the `env` and then the `encrypted shared_file` will be decrypted by the decrypted `private key`. The file will then be downloaded.
+
+![PrivateKeyPrompt](https://cdn.discordapp.com/attachments/824131614073683968/1177790862814625922/image.png?ex=6573ca37&is=65615537&hm=aedd2c4dcd5e7b9abaf189440871d5a1adb691a26fd2e8f8856edfbefe6caf08&)
+
+```php
+public function decryptWithKey(Request $request, $id) {
+        $file = Files::find($id);
+
+        if (!$file) {
+            abort(404); // File not found
+        }
+
+        // Fetch the private key from the request
+        $privateKey = $request->input('private_key');
+
+
+        // Fetch the encrypted file content and decrypt it
+        $cipher = "AES-256-CBC";
+        $options = 0;
+        $iv = $file->iv;
+        $decryptedPrivateKey = openssl_decrypt($privateKey, $cipher, env('AES_KEY_KEY'), $options, $iv);
+
+        $decrypted_AESBase64 = openssl_decrypt($file->file_base64, $cipher, $decryptedPrivateKey, $options, $iv);
+        $fileContent = base64_decode($decrypted_AESBase64);
+
+        // Set headers for file download
+        $headers = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename=' . $file->filename,
+        ];
+
+        // Return the download response
+        return response()->make($fileContent, 200, $headers);
+    }
+```
