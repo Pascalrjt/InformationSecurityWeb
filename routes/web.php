@@ -12,7 +12,6 @@ use App\Http\Controllers\FilesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FileRequestController;
 use App\Http\Controllers\InboxController;
-use App\Http\Controllers\DigitalSignatureController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -78,15 +77,3 @@ Route::put('/filerequests/{fileRequest}', 'FileRequestController@update')->name(
 Route::post('/filerequests/{requested}', [FileRequestController::class, 'store'])->name('filerequests.store');
 Route::put('/filerequests/{fileRequest}', [FileRequestController::class, 'update'])->name('filerequests.update');
 
-Route::group(['middleware' => ['auth']], function () {
-    Route::get('/digitalsignature', function () {
-        return view('digitalsignature.index');
-    });
-
-    Route::get('/digitalsignature/create', function () {
-        return view('digitalsignature.create');
-    });
-
-    Route::post('/digitalsignature/download', 'App\Http\Controllers\DigitalSignatureController@downloadPdf');
-});
-// Route::get('/tcpdf',[\App\Http\Controllers\DigitalSignatureController::class,'downloadPdf']);
