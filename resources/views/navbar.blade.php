@@ -21,12 +21,12 @@
             <h5 class="mx-2">
                 <a href="/">Home</a>
             </h5>
-            <h5 class="mx-2">
+            {{-- <h5 class="mx-2">
                 <a href="/animals">Animals</a>
             </h5>
             <h5 class="mx-2">
                 <a href="/center">Centers</a>
-            </h5>
+            </h5> --}}
             <h5 class="mx-2">
                 <a href="/users">Users</a>
             </h5>

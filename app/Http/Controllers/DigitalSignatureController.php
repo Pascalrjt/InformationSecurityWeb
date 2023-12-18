@@ -16,8 +16,10 @@ class DigitalSignatureController extends Controller
         $options = 0;
         $iv = str_repeat("0", openssl_cipher_iv_length($cipher));
         $decryptedEmail = openssl_decrypt(Auth::user()->email, $cipher, Auth::user()->keyAES, $options, $iv);
+        $username = Auth::user()->username;
 
         $certificate = 'file://'.base_path().'/storage/app/certificates/Webhub.crt';
+        // $certificate = base_path("/storage/app/certificates/{$username}.crt");
 
         // signature information
         $info = array(
