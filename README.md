@@ -378,6 +378,8 @@ public function decryptWithKey(Request $request, $id) {
 
 ![DigitalSignatureCreate](https://media.discordapp.net/attachments/824131614073683968/1186132282579370085/image.png?ex=659222c5&is=657fadc5&hm=097481f6eaa50ff0d7ff5dcdbdb9e88e8bf749c55b0b554615302c79eacb3b26&=&format=webp&quality=lossless&width=910&height=468)
 
+![ProofofSignature](https://media.discordapp.net/attachments/824131614073683968/1186166815601217737/image.png?ex=659242ee&is=657fcdee&hm=04693cbba789be647f1c8b292bb382d3cbfb6a7d1750b26bebae8fd0ca147ec2&=&format=webp&quality=lossless&width=1741&height=889)
+
 ```php
 <?php
 
